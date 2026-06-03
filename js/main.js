@@ -51,10 +51,13 @@ function leagueMatch(p, filter) {
   return p.league === filter;
 }
 
+/* ─── Active products only ─── */
+const activeProducts = () => products.filter(p => p.active !== false);
+
 /* ─── Products in current group ─── */
 function getInGroup() {
-  if (state.activeTeam) return products.filter(p => p.team === state.activeTeam);
-  return products.filter(p => leagueMatch(p, state.activeLeague));
+  if (state.activeTeam) return activeProducts().filter(p => p.team === state.activeTeam);
+  return activeProducts().filter(p => leagueMatch(p, state.activeLeague));
 }
 
 /* ─── Bar stacking ─── */
@@ -87,7 +90,7 @@ function updateTeamBar() {
   }
 
   const teamsInLeague = [...new Set(
-    products.filter(p => p.league === state.activeLeague).map(p => p.team)
+    activeProducts().filter(p => p.league === state.activeLeague).map(p => p.team)
   )].sort();
 
   if (teamsInLeague.length === 0) {
@@ -159,7 +162,7 @@ function buildCard(p) {
 function renderCatalog() {
   const q = state.searchQuery.toLowerCase().trim();
 
-  const filtered = products.filter(p => {
+  const filtered = activeProducts().filter(p => {
     const groupOk  = state.activeTeam
       ? p.team === state.activeTeam
       : leagueMatch(p, state.activeLeague);
