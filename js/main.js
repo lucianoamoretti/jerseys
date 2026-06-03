@@ -262,6 +262,11 @@ function openModal(id) {
           <span class="addon-price">+€2</span>
         </div>
       </div>
+      <div class="m-info-strip">
+        <span><i class="fas fa-shipping-fast"></i> €5 shipping · <strong>Free on 4+ items</strong></span>
+        <span><i class="fab fa-paypal"></i> PayPal accepted</span>
+        <span><i class="fas fa-ruler"></i> 2XL +€2 · 3XL/4XL +€3</span>
+      </div>
       <button class="m-order-btn" onclick="orderFromModal(${p.id})">
         <i class="fab fa-whatsapp"></i> Order on WhatsApp — <span id="mBtnTotal">${priceLabel}</span>
       </button>
