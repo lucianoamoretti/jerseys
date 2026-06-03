@@ -30,6 +30,7 @@ const cartBadge   = document.getElementById('cartBadge');
 /* ─── Type label (for title display only) ─── */
 const TYPE_LABELS = {
   fan: 'Fan Version', player: 'Player Version', retro: 'Retro',
+  retrolongsleeve: 'Retro Long Sleeve',
   nba: 'NBA', longsleeve: 'Long Sleeve', short: 'Shorts',
   infant: 'Infant Kit', windbreaker: 'Windbreaker', jacket: 'Jacket',
 };
