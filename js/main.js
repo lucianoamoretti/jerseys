@@ -198,9 +198,21 @@ function renderProductPage(id) {
   const confLine = (p.conference && p.conference !== 'NBA' && p.conference !== '')
     ? ` · ${p.conference}` : '';
 
-  const imgHtml = p.image
-    ? `<img class="pp-img" src="${p.image}" alt="${p.name}">`
-    : `<div class="pp-placeholder" style="background:radial-gradient(circle at 50% 50%,${meta.color} 0%,#0b0b0b 100%)">${meta.icon}</div>`;
+  const allImgs = (p.images && p.images.length > 0) ? p.images : (p.image ? [p.image] : []);
+
+  let imgHtml;
+  if (allImgs.length > 1) {
+    const thumbs = allImgs.map((src, i) =>
+      `<button class="pp-thumb${i === 0 ? ' active' : ''}" onclick="ppSetImg(this,'${src}')" style="background-image:url('${src}')"></button>`
+    ).join('');
+    imgHtml = `
+      <img class="pp-img" id="ppMainImg" src="${allImgs[0]}" alt="${p.name}">
+      <div class="pp-thumbs">${thumbs}</div>`;
+  } else if (allImgs.length === 1) {
+    imgHtml = `<img class="pp-img" id="ppMainImg" src="${allImgs[0]}" alt="${p.name}">`;
+  } else {
+    imgHtml = `<div class="pp-placeholder" style="background:radial-gradient(circle at 50% 50%,${meta.color} 0%,#0b0b0b 100%)">${meta.icon}</div>`;
+  }
 
   const sizeBtns = ALL_SIZES.map(s => {
     const ex = sizeExtra(s);
@@ -264,6 +276,12 @@ function renderProductPage(id) {
         <i class="fas fa-shopping-bag"></i> Add to Cart — <span id="ppBtnTotal">${priceLabel}</span>
       </button>
     </div>`;
+}
+
+function ppSetImg(thumb, src) {
+  document.getElementById('ppMainImg').src = src;
+  document.querySelectorAll('.pp-thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
 }
 
 function ppSelectSize(btn) {
