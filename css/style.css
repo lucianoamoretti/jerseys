@@ -162,6 +162,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 .fg-pills::-webkit-scrollbar { display: none; }
 
 .team-bar { background: #eef7ef; top: 148px; border-top: 1px solid var(--border); }
+.team-bar .fg-pills { flex-wrap: wrap; overflow-x: visible; padding: 8px 12px; }
 
 /* Pills */
 .fpill {
