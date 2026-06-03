@@ -1,117 +1,143 @@
 /* =====================================================
-   YOUR JERSEY STORE — Main App Logic
+   YOUR JERSEY STORE — Main Logic
+   Dual filter: type + league (incl. NBA conferences)
+   EUR prices with profit
    ===================================================== */
 
 const WA_NUMBER = '353831917032';
 
-/* ---- State ---- */
-let activeCategory = 'all';
-let searchQuery    = '';
+/* ─── State ─── */
+let activeType   = 'all';
+let activeLeague = 'all';
+let searchQuery  = '';
 
-/* ---- DOM refs ---- */
-const grid       = document.getElementById('productGrid');
-const noResults  = document.getElementById('noResults');
-const countBadge = document.getElementById('countBadge');
-const sectionTitleEl = document.getElementById('sectionTitle');
+/* ─── DOM ─── */
+const grid        = document.getElementById('productGrid');
+const noResults   = document.getElementById('noResults');
+const countBadge  = document.getElementById('countBadge');
+const titleEl     = document.getElementById('sectionTitle');
 const searchInput = document.getElementById('searchInput');
 const searchClear = document.getElementById('searchClear');
-const modalOverlay = document.getElementById('modalOverlay');
-const modalContent = document.getElementById('modalContent');
-const modalClose   = document.getElementById('modalClose');
+const modalOverlay= document.getElementById('modalOverlay');
+const modalContent= document.getElementById('modalContent');
+const modalClose  = document.getElementById('modalClose');
 
-/* ========== SIZE PRICING ========== */
-function sizeSurcharge(size) {
-  if (size === '2XL') return 1;
-  if (size === '3XL' || size === '4XL') return 2;
+/* ─── Size surcharge (EUR) ─── */
+function sizeExtra(size) {
+  if (size === '2XL') return 2;
+  if (size === '3XL' || size === '4XL') return 3;
   return 0;
 }
 
-/* ========== BASE PRICE ========== */
-function basePrice(product) {
-  return CATEGORY_META[product.category].price;
+/* ─── Placeholder ─── */
+function buildPlaceholder(p) {
+  const meta  = CATEGORY_META[p.category];
+  const style = `background:radial-gradient(circle at 50% 50%,${meta.color} 0%,#0b0b0b 100%);`;
+  const badge = p.league || '';
+  return `<div class="product-placeholder" style="${style}">
+    <span class="ph-tag">${badge}</span>
+    <span>${meta.icon}</span>
+  </div>`;
 }
 
-/* ========== BUILD PLACEHOLDER ========== */
-function buildPlaceholder(product, small = false) {
-  const meta  = CATEGORY_META[product.category];
-  const style = `background: radial-gradient(circle at 50% 50%, ${meta.color} 0%, #0b0b0b 100%);`;
-  return `
-    <div class="product-placeholder" style="${style}">
-      <span class="ph-league-tag">${product.league}</span>
-      <span>${meta.icon}</span>
-    </div>`;
-}
-
-/* ========== BUILD CARD ========== */
+/* ─── Build card ─── */
 function buildCard(p) {
   const meta  = CATEGORY_META[p.category];
-  const price = basePrice(p);
-  const label = p.priceNote || `$${price}`;
+  const price = meta.price;
+  const label = p.category === 'jacket' ? `€${price}–€${meta.maxPrice}` : `€${price.toFixed(2)}`;
 
   const imgHtml = p.image
     ? `<img class="product-img" src="${p.image}" alt="${p.name}" loading="lazy">`
     : buildPlaceholder(p);
 
   const sizesHtml = ALL_SIZES.map(s => {
-    const extra = sizeSurcharge(s);
-    return `<span class="sz${extra > 0 ? ' plus' : ''}">${s}${extra > 0 ? ' +$' + extra : ''}</span>`;
+    const ex = sizeExtra(s);
+    return `<span class="sz${ex ? ' plus' : ''}">${s}${ex ? ` +€${ex}` : ''}</span>`;
   }).join('');
 
-  return `
-    <div class="product-card" data-id="${p.id}" onclick="openModal(${p.id})">
-      ${imgHtml}
-      <div class="product-body">
-        <div class="product-cat-tag">${meta.label}</div>
-        <div class="product-name">${p.name}</div>
-        <div class="product-row">
-          <span class="product-price">${label}</span>
-          <span class="product-badge">${p.league}</span>
-        </div>
-        <div class="product-sizes">${sizesHtml}</div>
-        <button class="order-btn" onclick="event.stopPropagation(); orderOnWhatsApp(${p.id})">
-          <i class="fab fa-whatsapp"></i> Order on WhatsApp
-        </button>
+  const leagueLabel = p.league.replace('NBA East','🟣 East').replace('NBA West','🟠 West');
+
+  return `<div class="product-card" onclick="openModal(${p.id})">
+    ${imgHtml}
+    <div class="product-body">
+      <div class="product-cat-tag">${meta.label}</div>
+      <div class="product-name">${p.name}</div>
+      <div class="product-row">
+        <span class="product-price">${label}</span>
+        <span class="product-badge">${leagueLabel}</span>
       </div>
-    </div>`;
+      <div class="product-sizes">${sizesHtml}</div>
+      <button class="order-btn" onclick="event.stopPropagation();quickOrder(${p.id})">
+        <i class="fab fa-whatsapp"></i> Order on WhatsApp
+      </button>
+    </div>
+  </div>`;
 }
 
-/* ========== RENDER GRID ========== */
+/* ─── League matching (supports NBA prefix) ─── */
+function leagueMatch(product, leagueFilter) {
+  if (leagueFilter === 'all') return true;
+  if (leagueFilter === 'NBA') return product.league.startsWith('NBA');
+  return product.league === leagueFilter;
+}
+
+/* ─── Render ─── */
 function render() {
   const q = searchQuery.toLowerCase().trim();
 
   const filtered = products.filter(p => {
-    const catMatch = activeCategory === 'all' || p.category === activeCategory;
-    const searchMatch = !q ||
+    const typeOk   = activeType === 'all' || p.category === activeType;
+    const leagueOk = leagueMatch(p, activeLeague);
+    const searchOk = !q ||
       p.name.toLowerCase().includes(q) ||
       p.team.toLowerCase().includes(q) ||
       p.league.toLowerCase().includes(q) ||
+      (p.conference || '').toLowerCase().includes(q) ||
       CATEGORY_META[p.category].label.toLowerCase().includes(q);
-    return catMatch && searchMatch;
+    return typeOk && leagueOk && searchOk;
   });
 
   grid.innerHTML = filtered.map(buildCard).join('');
   countBadge.textContent = `${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
   noResults.classList.toggle('hidden', filtered.length > 0);
 
-  // Update section title
-  if (activeCategory !== 'all') {
-    sectionTitleEl.textContent = CATEGORY_META[activeCategory].label.toUpperCase();
+  // Section title
+  const typeName   = activeType   !== 'all' ? CATEGORY_META[activeType].label : '';
+  const leagueName = activeLeague !== 'all' ? activeLeague : '';
+  if (q) {
+    titleEl.textContent = `RESULTS — "${q.toUpperCase()}"`;
+  } else if (typeName && leagueName) {
+    titleEl.textContent = `${leagueName.toUpperCase()} — ${typeName.toUpperCase()}`;
+  } else if (typeName) {
+    titleEl.textContent = typeName.toUpperCase();
+  } else if (leagueName) {
+    titleEl.textContent = leagueName.toUpperCase();
   } else {
-    sectionTitleEl.textContent = q ? `RESULTS FOR "${q.toUpperCase()}"` : 'ALL PRODUCTS';
+    titleEl.textContent = 'ALL PRODUCTS';
   }
 }
 
-/* ========== CATEGORY FILTER ========== */
-document.getElementById('catList').addEventListener('click', e => {
-  const btn = e.target.closest('.cat-pill');
+/* ─── Type filter ─── */
+document.getElementById('typeList').addEventListener('click', e => {
+  const btn = e.target.closest('.fpill');
   if (!btn) return;
-  document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#typeList .fpill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  activeCategory = btn.dataset.cat;
+  activeType = btn.dataset.type;
   render();
 });
 
-/* ========== SEARCH ========== */
+/* ─── League filter ─── */
+document.getElementById('leagueList').addEventListener('click', e => {
+  const btn = e.target.closest('.fpill');
+  if (!btn) return;
+  document.querySelectorAll('#leagueList .fpill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeLeague = btn.dataset.league;
+  render();
+});
+
+/* ─── Search ─── */
 searchInput.addEventListener('input', () => {
   searchQuery = searchInput.value;
   searchClear.style.display = searchQuery ? 'block' : 'none';
@@ -122,82 +148,74 @@ searchClear.addEventListener('click', () => {
   searchInput.value = '';
   searchQuery = '';
   searchClear.style.display = 'none';
-  searchInput.focus();
   render();
 });
 
-/* ========== MODAL ========== */
+/* ─── MODAL ─── */
 function openModal(id) {
   const p    = products.find(x => x.id === id);
   const meta = CATEGORY_META[p.category];
-  const bp   = basePrice(p);
+  const bp   = meta.price;
+  const isJacket = p.category === 'jacket';
 
   const imgHtml = p.image
     ? `<img class="m-img" src="${p.image}" alt="${p.name}">`
-    : `<div class="m-placeholder" style="background:radial-gradient(circle at 50% 50%, ${meta.color} 0%, #0b0b0b 100%)">${meta.icon}</div>`;
+    : `<div class="m-placeholder" style="background:radial-gradient(circle at 50% 50%,${meta.color} 0%,#0b0b0b 100%)">${meta.icon}</div>`;
+
+  const leagueLabel = (p.conference && p.conference !== 'NBA' && p.conference !== '')
+    ? `${p.league} · ${p.conference}` : p.league;
 
   const sizeBtns = ALL_SIZES.map(s => {
-    const extra = sizeSurcharge(s);
-    return `
-      <button class="size-btn" data-size="${s}" data-extra="${extra}" onclick="selectSize(this)">
-        ${s}
-        ${extra > 0 ? `<span class="size-surcharge">+$${extra}</span>` : ''}
-      </button>`;
+    const ex = sizeExtra(s);
+    return `<button class="size-btn" data-size="${s}" data-extra="${ex}" onclick="selectSize(this)">
+      ${s}${ex ? `<span class="size-surcharge">+€${ex}</span>` : ''}
+    </button>`;
   }).join('');
+
+  const priceLabel = isJacket ? `€${bp}–€${meta.maxPrice}` : `€${bp.toFixed(2)}`;
 
   modalContent.innerHTML = `
     ${imgHtml}
     <div class="m-body">
-      <div class="m-cat">${meta.label} · ${p.league}</div>
+      <div class="m-cat">${meta.label} · ${leagueLabel}</div>
       <div class="m-name">${p.name}</div>
-      <div class="m-league">${p.team} ${p.season ? '— ' + p.season : ''}</div>
-
+      <div class="m-league">${p.team}</div>
       <div class="m-price-row">
         <div>
-          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Base price</div>
-          <div class="m-base-price">$${bp}</div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Base price</div>
+          <div class="m-base-price">${priceLabel}</div>
         </div>
         <div class="m-total-box">
           <div class="m-total-label">Your total</div>
-          <div class="m-total-price" id="mTotal">$${bp}</div>
+          <div class="m-total-price" id="mTotal">${priceLabel}</div>
         </div>
       </div>
-
       <div class="m-section-label">Select size</div>
       <div class="size-selector">${sizeBtns}</div>
-
       <div class="m-section-label">Add-ons</div>
       <div class="addon-toggles">
-        <div class="addon-toggle" data-price="3" onclick="toggleAddon(this)">
+        <div class="addon-toggle" data-price="6" onclick="toggleAddon(this)">
           <div class="addon-left">
             <span class="addon-icon">✂️</span>
-            <div>
-              <div class="addon-name">Customization</div>
-              <div class="addon-desc">Add your name &amp; number</div>
-            </div>
+            <div><div class="addon-name">Customization</div><div class="addon-desc">Name &amp; number on jersey</div></div>
           </div>
-          <span class="addon-price">+$3</span>
+          <span class="addon-price">+€6</span>
         </div>
-        <div class="addon-toggle" data-price="1" onclick="toggleAddon(this)">
+        <div class="addon-toggle" data-price="2" onclick="toggleAddon(this)">
           <div class="addon-left">
             <span class="addon-icon">📌</span>
-            <div>
-              <div class="addon-name">Patch</div>
-              <div class="addon-desc">League or competition badge</div>
-            </div>
+            <div><div class="addon-name">Patch</div><div class="addon-desc">League or competition badge</div></div>
           </div>
-          <span class="addon-price">+$1</span>
+          <span class="addon-price">+€2</span>
         </div>
       </div>
-
       <button class="m-order-btn" onclick="orderFromModal(${p.id})">
-        <i class="fab fa-whatsapp"></i> Order on WhatsApp
+        <i class="fab fa-whatsapp"></i> Order on WhatsApp — <span id="mBtnTotal">${priceLabel}</span>
       </button>
     </div>`;
 
   modalOverlay.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
-  updateTotal();
 }
 
 function selectSize(btn) {
@@ -212,103 +230,78 @@ function toggleAddon(el) {
 }
 
 function updateTotal() {
-  const totalEl = document.getElementById('mTotal');
-  if (!totalEl) return;
-
-  const activePill = document.querySelector('.cat-pill.active');
-  const modalCatTag = document.querySelector('.m-cat');
-  if (!modalCatTag) return;
-
-  // Get base price from the displayed m-base-price
   const basePriceEl = document.querySelector('.m-base-price');
-  if (!basePriceEl) return;
-  let total = parseInt(basePriceEl.textContent.replace('$', ''));
+  const totalEl     = document.getElementById('mTotal');
+  const btnTotalEl  = document.getElementById('mBtnTotal');
+  if (!basePriceEl || !totalEl) return;
 
-  // Size surcharge
+  const base = parseFloat(basePriceEl.textContent.replace('€','').split('–')[0]);
+  let total = base;
+
   const selSize = document.querySelector('.size-btn.selected');
-  if (selSize) total += parseInt(selSize.dataset.extra || 0);
+  if (selSize) total += parseFloat(selSize.dataset.extra || 0);
 
-  // Add-ons
   document.querySelectorAll('.addon-toggle.active').forEach(a => {
-    total += parseInt(a.dataset.price || 0);
+    total += parseFloat(a.dataset.price || 0);
   });
 
-  totalEl.textContent = `$${total}`;
+  const fmt = `€${total.toFixed(2)}`;
+  totalEl.textContent = fmt;
+  if (btnTotalEl) btnTotalEl.textContent = fmt;
 }
 
-/* ========== WHATSAPP ORDERING ========== */
-function buildWAMessage(product, size, addons) {
-  const meta = CATEGORY_META[product.category];
-  const bp   = basePrice(product);
-  let   total = bp;
+/* ─── WhatsApp message builder ─── */
+function buildMsg(p, size, addons) {
+  const meta = CATEGORY_META[p.category];
+  const bp   = meta.price;
+  let total  = bp;
+  const ex   = size ? sizeExtra(size) : 0;
+  total += ex;
+  const addonLines = addons.map(a => { total += a.price; return `• ${a.name}: +€${a.price}`; });
 
-  const sizeText = size || 'Not selected';
-  const extra    = size ? sizeSurcharge(size) : 0;
-  total += extra;
-
-  const addonLines = addons.map(a => {
-    total += a.price;
-    return `• ${a.name}: +$${a.price}`;
-  });
-
-  const msg = [
+  return encodeURIComponent([
     `👋 Hi! I'd like to order from *Your Jersey Store*:`,
     ``,
-    `🛒 *${product.name}*`,
-    `📂 Category: ${meta.label}`,
-    `⚽ League: ${product.league}`,
-    `📏 Size: ${sizeText}${extra > 0 ? ` (+$${extra})` : ''}`,
+    `🛒 *${p.name}*`,
+    `📂 ${meta.label}  |  ${p.league}`,
+    `📏 Size: ${size || 'Not selected'}${ex ? ` (+€${ex})` : ''}`,
     ...addonLines,
     ``,
-    `💰 Total: $${total}`,
+    `💰 Total: €${total.toFixed(2)}`,
     ``,
-    `Please confirm availability & shipping cost. Thank you!`
-  ].join('\n');
-
-  return encodeURIComponent(msg);
+    `Please confirm availability. Thank you!`
+  ].join('\n'));
 }
 
 function orderFromModal(id) {
-  const p = products.find(x => x.id === id);
-  const selSize = document.querySelector('.size-btn.selected');
-  const size = selSize ? selSize.dataset.size : null;
-
-  const addons = [];
-  document.querySelectorAll('.addon-toggle.active').forEach(a => {
-    const name = a.querySelector('.addon-name').textContent;
-    addons.push({ name, price: parseInt(a.dataset.price) });
-  });
-
-  const msg = buildWAMessage(p, size, addons);
-  window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
+  const p       = products.find(x => x.id === id);
+  const size    = document.querySelector('.size-btn.selected')?.dataset.size || null;
+  const addons  = [...document.querySelectorAll('.addon-toggle.active')].map(a => ({
+    name: a.querySelector('.addon-name').textContent,
+    price: parseFloat(a.dataset.price)
+  }));
+  window.open(`https://wa.me/${WA_NUMBER}?text=${buildMsg(p, size, addons)}`, '_blank');
 }
 
-function orderOnWhatsApp(id) {
+function quickOrder(id) {
   const p = products.find(x => x.id === id);
-  const msg = buildWAMessage(p, null, []);
-  window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
+  window.open(`https://wa.me/${WA_NUMBER}?text=${buildMsg(p, null, [])}`, '_blank');
 }
 
-/* ========== CLOSE MODAL ========== */
+/* ─── Close modal ─── */
 modalClose.addEventListener('click', closeModal);
-modalOverlay.addEventListener('click', e => {
-  if (e.target === modalOverlay) closeModal();
-});
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
-});
-
+modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 function closeModal() {
   modalOverlay.classList.add('hidden');
   document.body.style.overflow = '';
 }
 
-/* ========== STICKY HEADER SHADOW ========== */
+/* ─── Sticky shadow ─── */
 window.addEventListener('scroll', () => {
-  const header = document.getElementById('header');
-  header.style.boxShadow = window.scrollY > 10 ? '0 2px 20px rgba(0,0,0,.5)' : 'none';
+  document.getElementById('header').style.boxShadow =
+    window.scrollY > 10 ? '0 2px 16px rgba(0,0,0,.5)' : 'none';
 });
 
-/* ========== INIT ========== */
+/* ─── Init ─── */
 render();

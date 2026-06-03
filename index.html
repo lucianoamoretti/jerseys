@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Jersey Store — Premium Football & Basketball Jerseys</title>
+    <title>Your Jersey Store — Football &amp; Basketball</title>
     <meta name="description" content="Premium football and basketball jerseys. Fan editions, player grade, retro classics, NBA and more.">
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,20 +16,20 @@
     <!-- Scrolling Banner -->
     <div class="top-banner">
         <div class="banner-track">
-            <span>⚽ FAN JERSEY $10</span><span class="dot">•</span>
-            <span>🏀 NBA $19</span><span class="dot">•</span>
+            <span>⚽ FAN VERSION €22.90</span><span class="dot">•</span>
+            <span>🌟 PLAYER VERSION €29.90</span><span class="dot">•</span>
+            <span>🏀 NBA €34.90</span><span class="dot">•</span>
+            <span>👔 RETRO €29.90</span><span class="dot">•</span>
             <span>🚚 FREE SHIPPING ON 4+ ITEMS</span><span class="dot">•</span>
-            <span>✂️ CUSTOMIZATION +$3</span><span class="dot">•</span>
-            <span>📌 PATCH +$1</span><span class="dot">•</span>
-            <span>👔 RETRO $16</span><span class="dot">•</span>
-            <span>🧥 JACKET $35–45</span><span class="dot">•</span>
-            <span>⚽ FAN JERSEY $10</span><span class="dot">•</span>
-            <span>🏀 NBA $19</span><span class="dot">•</span>
+            <span>✂️ CUSTOMIZATION +€6</span><span class="dot">•</span>
+            <span>📌 PATCH +€2</span><span class="dot">•</span>
+            <span>⚽ FAN VERSION €22.90</span><span class="dot">•</span>
+            <span>🌟 PLAYER VERSION €29.90</span><span class="dot">•</span>
+            <span>🏀 NBA €34.90</span><span class="dot">•</span>
+            <span>👔 RETRO €29.90</span><span class="dot">•</span>
             <span>🚚 FREE SHIPPING ON 4+ ITEMS</span><span class="dot">•</span>
-            <span>✂️ CUSTOMIZATION +$3</span><span class="dot">•</span>
-            <span>📌 PATCH +$1</span><span class="dot">•</span>
-            <span>👔 RETRO $16</span><span class="dot">•</span>
-            <span>🧥 JACKET $35–45</span><span class="dot">•</span>
+            <span>✂️ CUSTOMIZATION +€6</span><span class="dot">•</span>
+            <span>📌 PATCH +€2</span><span class="dot">•</span>
         </div>
     </div>
 
@@ -40,32 +40,56 @@
                 <span class="logo-ball">⚽</span>
                 <div>
                     <span class="logo-name">YOUR JERSEY STORE</span>
-                    <span class="logo-tagline">Premium Football &amp; Basketball</span>
+                    <span class="logo-tagline">Football &amp; Basketball — Fast Delivery</span>
                 </div>
             </a>
             <div class="search-wrap">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search team, league, style..." autocomplete="off">
+                <input type="text" id="searchInput" placeholder="Search team, player, league..." autocomplete="off">
                 <button class="search-clear" id="searchClear"><i class="fas fa-times"></i></button>
             </div>
         </div>
     </header>
 
-    <!-- Category Nav -->
-    <nav class="cat-nav" id="catNav">
+    <!-- Filter Bar 1 — Category (Type) -->
+    <nav class="filter-bar" id="typeBar">
         <div class="container">
-            <div class="cat-scroll" id="catList">
-                <button class="cat-pill active" data-cat="all">All</button>
-                <button class="cat-pill" data-cat="fan">⚽ Fan Jersey</button>
-                <button class="cat-pill" data-cat="nba">🏀 NBA</button>
-                <button class="cat-pill" data-cat="retro">👔 Retro</button>
-                <button class="cat-pill" data-cat="nike-player">👕 Nike Player</button>
-                <button class="cat-pill" data-cat="adidas-player">👕 Adidas Player</button>
-                <button class="cat-pill" data-cat="infant">👶 Infant Kit</button>
-                <button class="cat-pill" data-cat="short">🩳 Shorts</button>
-                <button class="cat-pill" data-cat="longsleeve">🥼 Long Sleeve</button>
-                <button class="cat-pill" data-cat="windbreaker">🧥 Windbreaker</button>
-                <button class="cat-pill" data-cat="jacket">🧥 Jacket</button>
+            <div class="filter-scroll" id="typeList">
+                <button class="fpill active" data-type="all">All</button>
+                <button class="fpill" data-type="fan">⚽ Fan Version</button>
+                <button class="fpill" data-type="player">🌟 Player Version</button>
+                <button class="fpill" data-type="retro">👔 Retro</button>
+                <button class="fpill" data-type="nba">🏀 NBA</button>
+                <button class="fpill" data-type="longsleeve">🥼 Long Sleeve</button>
+                <button class="fpill" data-type="short">🩳 Shorts</button>
+                <button class="fpill" data-type="infant">👶 Infant Kit</button>
+                <button class="fpill" data-type="windbreaker">🧥 Windbreaker</button>
+                <button class="fpill" data-type="jacket">🧥 Jacket</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Filter Bar 2 — League -->
+    <nav class="filter-bar league-bar" id="leagueBar">
+        <div class="container">
+            <div class="filter-scroll" id="leagueList">
+                <button class="fpill league-pill active" data-league="all">🌐 All Leagues</button>
+                <button class="fpill league-pill" data-league="Premier League">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</button>
+                <button class="fpill league-pill" data-league="La Liga">🇪🇸 La Liga</button>
+                <button class="fpill league-pill" data-league="Serie A">🇮🇹 Serie A</button>
+                <button class="fpill league-pill" data-league="Bundesliga">🇩🇪 Bundesliga</button>
+                <button class="fpill league-pill" data-league="Ligue 1">🇫🇷 Ligue 1</button>
+                <button class="fpill league-pill" data-league="Brasileiro">🇧🇷 Brasileiro</button>
+                <button class="fpill league-pill" data-league="National Teams">🌍 National Teams</button>
+                <button class="fpill league-pill" data-league="NBA">🏀 NBA</button>
+                <button class="fpill league-pill" data-league="Liga Argentina">🇦🇷 Liga Argentina</button>
+                <button class="fpill league-pill" data-league="Liga MX">🇲🇽 Liga MX</button>
+                <button class="fpill league-pill" data-league="MLS">🇺🇸 MLS</button>
+                <button class="fpill league-pill" data-league="Primeira Liga">🇵🇹 Primeira Liga</button>
+                <button class="fpill league-pill" data-league="Eredivisie">🇳🇱 Eredivisie</button>
+                <button class="fpill league-pill" data-league="Scottish Premiership">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scottish</button>
+                <button class="fpill league-pill" data-league="Liga de Chile">🇨🇱 Chile</button>
+                <button class="fpill league-pill" data-league="Other">🌐 Other</button>
             </div>
         </div>
     </nav>
@@ -75,14 +99,14 @@
         <div class="hero-overlay"></div>
         <div class="container hero-inner">
             <p class="hero-eyebrow">World's Best Football &amp; Basketball Kits</p>
-            <h1 class="hero-title">JERSEY DROPS <span class="accent">2024/25</span></h1>
-            <p class="hero-desc">Fan editions, player grade, retro classics &amp; NBA. Customization available on all jerseys.</p>
+            <h1 class="hero-title">JERSEY DROPS <span class="accent">2025/26</span></h1>
+            <p class="hero-desc">Fan &amp; player editions, retro classics, NBA and more. Customization available on all jerseys.</p>
             <div class="hero-stats">
-                <div class="hstat"><span class="hnum">100+</span><span class="hlabel">Jerseys</span></div>
+                <div class="hstat"><span class="hnum">736</span><span class="hlabel">Jerseys</span></div>
                 <div class="hstat-div"></div>
-                <div class="hstat"><span class="hnum">20+</span><span class="hlabel">Leagues</span></div>
+                <div class="hstat"><span class="hnum">15+</span><span class="hlabel">Leagues</span></div>
                 <div class="hstat-div"></div>
-                <div class="hstat"><span class="hnum">$10</span><span class="hlabel">Starting at</span></div>
+                <div class="hstat"><span class="hnum">€22.90</span><span class="hlabel">Starting at</span></div>
             </div>
             <a href="#products" class="hero-cta">Browse All Jerseys <i class="fas fa-arrow-down"></i></a>
         </div>
@@ -93,7 +117,7 @@
         <div class="container info-grid">
             <div class="info-card">
                 <i class="fas fa-shipping-fast"></i>
-                <div><strong>$5 Flat Shipping</strong><small>Worldwide delivery</small></div>
+                <div><strong>€5 Flat Shipping</strong><small>Worldwide delivery</small></div>
             </div>
             <div class="info-card highlight">
                 <i class="fas fa-gift"></i>
@@ -105,11 +129,11 @@
             </div>
             <div class="info-card">
                 <i class="fas fa-cut"></i>
-                <div><strong>Customization</strong><small>Name &amp; number +$3</small></div>
+                <div><strong>Customization</strong><small>Name &amp; number +€6</small></div>
             </div>
             <div class="info-card">
                 <i class="fas fa-certificate"></i>
-                <div><strong>Patches</strong><small>League badges +$1</small></div>
+                <div><strong>Patches</strong><small>League badges +€2</small></div>
             </div>
         </div>
     </div>
@@ -119,20 +143,19 @@
         <div class="container">
             <h2 class="section-title">PRICING GUIDE</h2>
             <div class="price-grid">
-                <div class="price-card"><span class="pc-icon">⚽</span><span class="pc-label">Fan Jersey</span><span class="pc-price">$10</span></div>
-                <div class="price-card"><span class="pc-icon">🏀</span><span class="pc-label">NBA Jersey</span><span class="pc-price">$19</span></div>
-                <div class="price-card"><span class="pc-icon">👔</span><span class="pc-label">Retro Jersey</span><span class="pc-price">$16</span></div>
-                <div class="price-card"><span class="pc-icon">🩳</span><span class="pc-label">Shorts</span><span class="pc-price">$9</span></div>
-                <div class="price-card"><span class="pc-icon">👕</span><span class="pc-label">Nike Player</span><span class="pc-price">$16</span></div>
-                <div class="price-card"><span class="pc-icon">👕</span><span class="pc-label">Adidas Player</span><span class="pc-price">$16</span></div>
-                <div class="price-card"><span class="pc-icon">🥼</span><span class="pc-label">Long Sleeve</span><span class="pc-price">$15</span></div>
-                <div class="price-card"><span class="pc-icon">👶</span><span class="pc-label">Infant Kit</span><span class="pc-price">$14</span></div>
-                <div class="price-card"><span class="pc-icon">🧥</span><span class="pc-label">Windbreaker</span><span class="pc-price">$30</span></div>
-                <div class="price-card"><span class="pc-icon">🧥</span><span class="pc-label">Jacket</span><span class="pc-price">$35–45</span></div>
-                <div class="price-card addon"><span class="pc-icon">✂️</span><span class="pc-label">Customization</span><span class="pc-price accent">+$3</span></div>
-                <div class="price-card addon"><span class="pc-icon">📌</span><span class="pc-label">Patch</span><span class="pc-price accent">+$1</span></div>
-                <div class="price-card addon"><span class="pc-icon">📏</span><span class="pc-label">Size 2XL</span><span class="pc-price accent">+$1</span></div>
-                <div class="price-card addon"><span class="pc-icon">📏</span><span class="pc-label">3XL &amp; 4XL</span><span class="pc-price accent">+$2</span></div>
+                <div class="price-card"><span class="pc-icon">⚽</span><span class="pc-label">Fan Version</span><span class="pc-price">€22.90</span></div>
+                <div class="price-card"><span class="pc-icon">🌟</span><span class="pc-label">Player Version</span><span class="pc-price">€29.90</span></div>
+                <div class="price-card"><span class="pc-icon">🏀</span><span class="pc-label">NBA</span><span class="pc-price">€34.90</span></div>
+                <div class="price-card"><span class="pc-icon">👔</span><span class="pc-label">Retro</span><span class="pc-price">€29.90</span></div>
+                <div class="price-card"><span class="pc-icon">🥼</span><span class="pc-label">Long Sleeve</span><span class="pc-price">€27.90</span></div>
+                <div class="price-card"><span class="pc-icon">🩳</span><span class="pc-label">Shorts</span><span class="pc-price">€19.90</span></div>
+                <div class="price-card"><span class="pc-icon">👶</span><span class="pc-label">Infant Kit</span><span class="pc-price">€24.90</span></div>
+                <div class="price-card"><span class="pc-icon">🧥</span><span class="pc-label">Windbreaker</span><span class="pc-price">€49.90</span></div>
+                <div class="price-card"><span class="pc-icon">🧥</span><span class="pc-label">Jacket</span><span class="pc-price">€54.90–€74.90</span></div>
+                <div class="price-card addon"><span class="pc-icon">✂️</span><span class="pc-label">Customization</span><span class="pc-price accent">+€6</span></div>
+                <div class="price-card addon"><span class="pc-icon">📌</span><span class="pc-label">Patch</span><span class="pc-price accent">+€2</span></div>
+                <div class="price-card addon"><span class="pc-icon">📏</span><span class="pc-label">Size 2XL</span><span class="pc-price accent">+€2</span></div>
+                <div class="price-card addon"><span class="pc-icon">📏</span><span class="pc-label">3XL &amp; 4XL</span><span class="pc-price accent">+€3</span></div>
             </div>
         </div>
     </section>
@@ -147,7 +170,7 @@
             <div class="product-grid" id="productGrid"></div>
             <div class="no-results hidden" id="noResults">
                 <i class="fas fa-search-minus"></i>
-                <p>No jerseys found. Try a different search or category.</p>
+                <p>No jerseys found. Try a different filter.</p>
             </div>
         </div>
     </section>
@@ -161,7 +184,7 @@
     </div>
 
     <!-- WhatsApp FAB -->
-    <a class="wa-fab" id="waFab" href="https://wa.me/353831917032?text=Hi!%20I'm%20interested%20in%20ordering%20a%20jersey%20from%20Your%20Jersey%20Store." target="_blank" rel="noopener">
+    <a class="wa-fab" href="https://wa.me/353831917032?text=Hi!%20I'm%20interested%20in%20ordering%20a%20jersey%20from%20Your%20Jersey%20Store." target="_blank" rel="noopener">
         <i class="fab fa-whatsapp"></i>
         <span>Order Now</span>
     </a>
@@ -175,33 +198,43 @@
                 <a class="footer-wa-btn" href="https://wa.me/353831917032" target="_blank"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
             </div>
             <div class="footer-col">
-                <h5>Categories</h5>
+                <h5>Jersey Types</h5>
                 <ul>
-                    <li>Fan Jerseys — $10</li>
-                    <li>NBA — $19</li>
-                    <li>Retro Classics — $16</li>
-                    <li>Nike Player — $16</li>
-                    <li>Adidas Player — $16</li>
-                    <li>Infant Kits — $14</li>
-                    <li>Shorts — $9</li>
-                    <li>Long Sleeve — $15</li>
-                    <li>Windbreaker — $30</li>
-                    <li>Jackets — $35–45</li>
+                    <li>Fan Version — €22.90</li>
+                    <li>Player Version — €29.90</li>
+                    <li>NBA — €34.90</li>
+                    <li>Retro Classics — €29.90</li>
+                    <li>Long Sleeve — €27.90</li>
+                    <li>Shorts — €19.90</li>
+                    <li>Infant Kit — €24.90</li>
+                    <li>Windbreaker — €49.90</li>
+                    <li>Jacket — €54.90–€74.90</li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h5>Shipping</h5>
+                <h5>Leagues</h5>
                 <ul>
-                    <li>$5 flat shipping</li>
+                    <li>🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</li>
+                    <li>🇪🇸 La Liga</li>
+                    <li>🇮🇹 Serie A</li>
+                    <li>🇩🇪 Bundesliga</li>
+                    <li>🇫🇷 Ligue 1</li>
+                    <li>🇧🇷 Brasileiro</li>
+                    <li>🌍 National Teams</li>
+                    <li>🏀 NBA</li>
+                    <li>+ 10 more leagues</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h5>Shipping &amp; Add-ons</h5>
+                <ul>
+                    <li>€5 flat shipping</li>
                     <li>FREE on 4+ items</li>
                     <li>PayPal accepted</li>
-                </ul>
-                <h5 style="margin-top:20px">Add-ons</h5>
-                <ul>
-                    <li>Customization: +$3</li>
-                    <li>Patch: +$1</li>
-                    <li>2XL: +$1</li>
-                    <li>3XL / 4XL: +$2</li>
+                    <li>Customization: +€6</li>
+                    <li>Patch: +€2</li>
+                    <li>2XL: +€2</li>
+                    <li>3XL / 4XL: +€3</li>
                 </ul>
             </div>
         </div>
