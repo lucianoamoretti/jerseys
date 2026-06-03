@@ -266,7 +266,7 @@ function renderProductPage(id) {
       </div>
 
       <div class="pp-info-strip">
-        <span><i class="fas fa-shipping-fast"></i> €5 shipping · <strong>Free on 4+ items</strong></span>
+        <span><i class="fas fa-shipping-fast"></i> €5 shipping · <strong>Free on 2+ items</strong></span>
         <span><i class="fas fa-clock"></i> Delivery ~20 days</span>
         <span><i class="fab fa-paypal"></i> PayPal accepted</span>
         <span><i class="fas fa-ruler"></i> 2XL +€2 · 3XL/4XL +€3</span>
@@ -399,7 +399,7 @@ function renderCartPage() {
   }
 
   const subtotal = state.cart.reduce((s, i) => s + i.total, 0);
-  const shipping = state.cart.length >= 4 ? 0 : 5;
+  const shipping = state.cart.length >= 2 ? 0 : 5;
   const grandTotal = subtotal + shipping;
 
   const itemsHtml = state.cart.map(item => {
@@ -429,8 +429,8 @@ function renderCartPage() {
   }).join('');
 
   const freeHint = shipping === 0
-    ? `<div class="cs-free-hint"><i class="fas fa-gift"></i> Free shipping on 4+ items!</div>`
-    : `<div class="cs-free-hint"><i class="fas fa-info-circle"></i> Add ${4 - state.cart.length} more item(s) for free shipping</div>`;
+    ? `<div class="cs-free-hint"><i class="fas fa-gift"></i> Free shipping on 2+ items!</div>`
+    : `<div class="cs-free-hint"><i class="fas fa-info-circle"></i> Add ${2 - state.cart.length} more item(s) for free shipping</div>`;
 
   cartView.innerHTML = `
     <div class="container">
@@ -467,9 +467,9 @@ function renderCartPage() {
 /* ─── WhatsApp multi-item message ─── */
 function orderCartViaWhatsApp() {
   const subtotal   = state.cart.reduce((s, i) => s + i.total, 0);
-  const shipping   = state.cart.length >= 4 ? 0 : 5;
+  const shipping   = state.cart.length >= 2 ? 0 : 5;
   const grandTotal = subtotal + shipping;
-  const shippingLine = shipping === 0 ? 'FREE (4+ items)' : `€${shipping.toFixed(2)}`;
+  const shippingLine = shipping === 0 ? 'FREE (2+ items)' : `€${shipping.toFixed(2)}`;
 
   const lines = [
     `👋 Hi! I'd like to order from *Your Jersey Store*:`,

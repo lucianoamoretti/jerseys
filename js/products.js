@@ -1,15 +1,15 @@
 /* 736 products — EUR prices with profit — leagues + NBA conferences */
 
 const CATEGORY_META = {
-  'fan':         { label:'Fan Version',    icon:'⚽', price:22.90,  color:'#0a1628' },
-  'player':      { label:'Player Version', icon:'🌟', price:29.90,  color:'#0a0a1a' },
-  'retro':       { label:'Retro',          icon:'👔', price:29.90,  color:'#1a1000' },
-  'nba':         { label:'NBA',            icon:'🏀', price:34.90,  color:'#1a0808' },
-  'longsleeve':  { label:'Long Sleeve',    icon:'🥼', price:27.90,  color:'#0a1020' },
-  'short':       { label:'Shorts',         icon:'🩳', price:19.90,  color:'#0a1a0a' },
-  'infant':      { label:'Infant Kit',     icon:'👶', price:24.90,  color:'#0a1a1a' },
-  'windbreaker': { label:'Windbreaker',    icon:'🧥', price:49.90,  color:'#111118' },
-  'jacket':      { label:'Jacket',         icon:'🧥', price:54.90, maxPrice:74.90, color:'#100a0a' },
+  'fan':         { label:'Fan Version',    icon:'⚽', price:27.90,  color:'#0a1628' },
+  'player':      { label:'Player Version', icon:'🌟', price:34.90,  color:'#0a0a1a' },
+  'retro':       { label:'Retro',          icon:'👔', price:34.90,  color:'#1a1000' },
+  'nba':         { label:'NBA',            icon:'🏀', price:39.90,  color:'#1a0808' },
+  'longsleeve':  { label:'Long Sleeve',    icon:'🥼', price:32.90,  color:'#0a1020' },
+  'short':       { label:'Shorts',         icon:'🩳', price:24.90,  color:'#0a1a0a' },
+  'infant':      { label:'Infant Kit',     icon:'👶', price:29.90,  color:'#0a1a1a' },
+  'windbreaker': { label:'Windbreaker',    icon:'🧥', price:64.90,  color:'#111118' },
+  'jacket':      { label:'Jacket',         icon:'🧥', price:74.90, maxPrice:94.90, color:'#100a0a' },
 };
 
 const ALL_SIZES = ['S','M','L','XL','2XL','3XL','4XL'];
