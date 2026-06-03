@@ -91,10 +91,21 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 }
 .filter-bar::-webkit-scrollbar { display: none; }
 
-#typeBar    { top: 64px; }
-#leagueBar  { top: 108px; border-top: 1px solid rgba(255,255,255,.04); }
+/* League bar first */
+#leagueBar { top: 64px; }
 
-.league-bar { background: #111111; }
+/* Type sub-bar below league */
+.type-bar {
+  background: #0f0f0f;
+  top: 108px;
+  border-top: 1px solid rgba(255,255,255,.05);
+}
+
+/* When type bar is empty / hidden */
+.type-bar:empty,
+.type-bar .filter-scroll:empty { display: none; }
+
+.league-bar { background: #141414; }
 
 .filter-scroll {
   display: flex;
