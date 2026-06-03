@@ -7,6 +7,7 @@ const WA_NUMBER = '353831917032';
 
 /* ─── State ─── */
 let activeLeague = 'all';
+let activeTeam   = '';
 let activeType   = 'all';
 let searchQuery  = '';
 
@@ -50,18 +51,19 @@ function leagueMatch(product, leagueFilter) {
   return product.league === leagueFilter;
 }
 
-/* ─── Build dynamic type sub-bar for selected league ─── */
-function updateTypeBar(league) {
-  // Gather which types exist for this league
-  const inLeague = products.filter(p => leagueMatch(p, league));
-  const typeCounts = {};
-  inLeague.forEach(p => {
-    typeCounts[p.category] = (typeCounts[p.category] || 0) + 1;
-  });
+/* ─── Products matching current group filter (league or team) ─── */
+function getInGroup() {
+  if (activeTeam) return products.filter(p => p.team === activeTeam);
+  return products.filter(p => leagueMatch(p, activeLeague));
+}
 
+/* ─── Build dynamic type sub-bar ─── */
+function updateTypeBar() {
+  const inGroup = getInGroup();
+  const typeCounts = {};
+  inGroup.forEach(p => { typeCounts[p.category] = (typeCounts[p.category] || 0) + 1; });
   const availableTypes = Object.keys(typeCounts);
 
-  // Hide bar if only 1 type (or zero)
   if (availableTypes.length <= 1) {
     typeBar.style.display = 'none';
     activeType = 'all';
@@ -69,18 +71,15 @@ function updateTypeBar(league) {
   }
 
   typeBar.style.display = '';
-
-  // Preferred order
   const ORDER = ['fan', 'player', 'retro', 'nba', 'longsleeve', 'short', 'infant', 'windbreaker', 'jacket'];
   const sorted = ORDER.filter(t => availableTypes.includes(t));
 
-  // Build pills
-  const pills = [`<button class="fpill type-pill active" data-type="all">All (${inLeague.length})</button>`];
+  const pills = [`<button class="fpill type-pill active" data-type="all">All (${inGroup.length})</button>`];
   for (const t of sorted) {
     const meta = TYPE_ICONS[t];
     if (!meta) continue;
     pills.push(
-      `<button class="fpill type-pill" data-type="${t}" data-count="${typeCounts[t]}">
+      `<button class="fpill type-pill" data-type="${t}">
         ${meta.icon} ${meta.label} <span class="pill-count">${typeCounts[t]}</span>
       </button>`
     );
@@ -89,7 +88,6 @@ function updateTypeBar(league) {
   typeList.innerHTML = pills.join('');
   activeType = 'all';
 
-  // Attach click listener
   typeList.querySelectorAll('.type-pill').forEach(btn => {
     btn.addEventListener('click', () => {
       typeList.querySelectorAll('.type-pill').forEach(b => b.classList.remove('active'));
@@ -149,7 +147,7 @@ function render() {
   const q = searchQuery.toLowerCase().trim();
 
   const filtered = products.filter(p => {
-    const leagueOk = leagueMatch(p, activeLeague);
+    const groupOk  = activeTeam ? p.team === activeTeam : leagueMatch(p, activeLeague);
     const typeOk   = activeType === 'all' || p.category === activeType;
     const searchOk = !q ||
       p.name.toLowerCase().includes(q) ||
@@ -157,22 +155,22 @@ function render() {
       p.league.toLowerCase().includes(q) ||
       (p.conference || '').toLowerCase().includes(q) ||
       CATEGORY_META[p.category].label.toLowerCase().includes(q);
-    return leagueOk && typeOk && searchOk;
+    return groupOk && typeOk && searchOk;
   });
 
   grid.innerHTML = filtered.map(buildCard).join('');
   countBadge.textContent = `${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
   noResults.classList.toggle('hidden', filtered.length > 0);
 
-  // Title
-  const leagueName = activeLeague !== 'all' ? activeLeague : '';
-  const typeName   = activeType !== 'all' ? (TYPE_ICONS[activeType]?.label || activeType) : '';
+  const typeName = activeType !== 'all' ? (TYPE_ICONS[activeType]?.label || activeType) : '';
   if (q) {
     titleEl.textContent = `RESULTS — "${q.toUpperCase()}"`;
-  } else if (leagueName && typeName) {
-    titleEl.textContent = `${leagueName.toUpperCase()} — ${typeName.toUpperCase()}`;
-  } else if (leagueName) {
-    titleEl.textContent = leagueName.toUpperCase();
+  } else if (activeTeam) {
+    titleEl.textContent = typeName ? `${activeTeam.toUpperCase()} — ${typeName.toUpperCase()}` : activeTeam.toUpperCase();
+  } else if (activeLeague !== 'all' && typeName) {
+    titleEl.textContent = `${activeLeague.toUpperCase()} — ${typeName.toUpperCase()}`;
+  } else if (activeLeague !== 'all') {
+    titleEl.textContent = activeLeague.toUpperCase();
   } else if (typeName) {
     titleEl.textContent = typeName.toUpperCase();
   } else {
@@ -180,14 +178,20 @@ function render() {
   }
 }
 
-/* ─── League filter ─── */
-document.getElementById('leagueList').addEventListener('click', e => {
+/* ─── League / team filter ─── */
+document.getElementById('leagueBar').addEventListener('click', e => {
   const btn = e.target.closest('.fpill');
   if (!btn) return;
-  document.querySelectorAll('#leagueList .fpill').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#leagueBar .fpill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  activeLeague = btn.dataset.league;
-  updateTypeBar(activeLeague);
+  if (btn.dataset.team) {
+    activeTeam   = btn.dataset.team;
+    activeLeague = 'all';
+  } else {
+    activeTeam   = '';
+    activeLeague = btn.dataset.league || 'all';
+  }
+  updateTypeBar();
   render();
 });
 
@@ -358,10 +362,9 @@ const style = document.createElement('style');
 style.textContent = `
   .pill-count { font-size:9px; background:rgba(0,0,0,.3); padding:1px 5px; border-radius:8px; margin-left:3px; }
   .type-pill.active .pill-count { background:rgba(0,0,0,.25); }
-  #typeBar { top: 108px; }
 `;
 document.head.appendChild(style);
 
 /* ─── Init ─── */
-updateTypeBar('all');
+updateTypeBar();
 render();

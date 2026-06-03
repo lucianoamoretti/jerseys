@@ -84,33 +84,63 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 .filter-bar {
   background: var(--bg2);
   border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-  scrollbar-width: none;
   position: sticky;
   z-index: 200;
 }
-.filter-bar::-webkit-scrollbar { display: none; }
 
-/* League bar first */
+/* League bar — 3 rows */
 #leagueBar { top: 64px; }
+.league-bar { background: #141414; overflow: visible; }
 
-/* Type sub-bar below league */
+.fg-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.fg-row:last-child { border-bottom: none; }
+
+.fg-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 12px;
+  white-space: nowrap;
+  width: 72px;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255,255,255,.08);
+}
+
+.fg-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 7px 12px;
+  scrollbar-width: none;
+  flex: 1;
+  align-items: center;
+}
+.fg-pills::-webkit-scrollbar { display: none; }
+
+/* Type sub-bar below the 3-row league bar (3 × 42px + 64px header = 190px) */
 .type-bar {
   background: #0f0f0f;
-  top: 108px;
+  top: 190px;
   border-top: 1px solid rgba(255,255,255,.05);
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+.type-bar::-webkit-scrollbar { display: none; }
 
 /* When type bar is empty / hidden */
 .type-bar:empty,
 .type-bar .filter-scroll:empty { display: none; }
 
-.league-bar { background: #141414; }
-
 .filter-scroll {
   display: flex;
   gap: 6px;
-  padding: 8px 20px;
+  padding: 7px 20px;
   max-width: 1380px;
   margin: 0 auto;
   white-space: nowrap;
@@ -137,6 +167,8 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 /* NBA East/West special colors */
 .fpill[data-league="NBA East"].active { background: #1a0033; border-color: #7a00dd; color: #bb66ff; }
 .fpill[data-league="NBA West"].active { background: #1a0000; border-color: #dd4400; color: #ff8844; }
+/* Team pills */
+.fpill.team-pill.active { background: #001a33; border-color: #0066cc; color: #66aaff; }
 
 /* ===== HERO ===== */
 .hero {
@@ -258,6 +290,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 @media (max-width: 1024px) { .footer-grid { grid-template-columns: 1fr 1fr; } .footer-brand { grid-column: 1/-1; } }
 @media (max-width: 640px) {
   #leagueBar { top: 108px; }
+  .type-bar { top: 234px; } /* 108 + 3×42 */
   .logo-tagline { display: none; }
   .hero-title { font-size: 50px; }
   .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -268,4 +301,5 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 @media (max-width: 420px) {
   .product-grid { grid-template-columns: 1fr; }
   #leagueBar { top: 107px; }
+  .type-bar { top: 233px; }
 }
