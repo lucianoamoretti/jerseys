@@ -161,25 +161,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 /* Team sub-bar */
 .team-bar { background: #111; top: 148px; border-top: 1px solid rgba(255,255,255,.03); }
 
-/* Type sub-bar */
-.type-bar {
-  background: #0f0f0f;
-  top: 190px;
-  border-top: 1px solid rgba(255,255,255,.05);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.type-bar::-webkit-scrollbar { display: none; }
-.type-bar .filter-scroll:empty { display: none; }
-
-.filter-scroll {
-  display: flex;
-  gap: 6px;
-  padding: 7px 20px;
-  max-width: 1380px;
-  margin: 0 auto;
-  white-space: nowrap;
-}
 
 /* Pills */
 .fpill {
@@ -208,8 +189,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 .fpill.team-pill.active { background: #001a33; border-color: #0066cc; color: #66aaff; }
 
 /* Pill count badge */
-.pill-count { font-size: 9px; background: rgba(0,0,0,.3); padding: 1px 5px; border-radius: 8px; margin-left: 3px; }
-.fpill.active .pill-count { background: rgba(0,0,0,.25); }
 
 /* ===== HERO ===== */
 .hero {
@@ -457,7 +436,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 @media (max-width: 640px) {
   #leagueBar { top: 64px; }
   .team-bar { top: 148px; }
-  .type-bar { top: 148px; }
+
   .logo-tagline { display: none; }
   .hero-title { font-size: 50px; }
   .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }

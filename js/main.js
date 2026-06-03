@@ -9,7 +9,6 @@ const state = {
   view:            'catalog',
   activeLeague:    'all',
   activeTeam:      '',
-  activeType:      'all',
   searchQuery:     '',
   currentProductId: null,
   cart: JSON.parse(localStorage.getItem('yjs_cart') || '[]'),
@@ -22,25 +21,17 @@ const countBadge  = document.getElementById('countBadge');
 const titleEl     = document.getElementById('sectionTitle');
 const searchInput = document.getElementById('searchInput');
 const searchClear = document.getElementById('searchClear');
-const typeList    = document.getElementById('typeList');
-const typeBar     = document.getElementById('typeBar');
 const teamList    = document.getElementById('teamList');
 const teamBar     = document.getElementById('teamBar');
 const leagueBar   = document.getElementById('leagueBar');
 const cartBtn     = document.getElementById('cartBtn');
 const cartBadge   = document.getElementById('cartBadge');
 
-/* ─── Type metadata ─── */
-const TYPE_ICONS = {
-  fan:         { icon: '⚽', label: 'Fan Version' },
-  player:      { icon: '🌟', label: 'Player Version' },
-  retro:       { icon: '👔', label: 'Retro' },
-  nba:         { icon: '🏀', label: 'NBA' },
-  longsleeve:  { icon: '🥼', label: 'Long Sleeve' },
-  short:       { icon: '🩳', label: 'Shorts' },
-  infant:      { icon: '👶', label: 'Infant Kit' },
-  windbreaker: { icon: '🧥', label: 'Windbreaker' },
-  jacket:      { icon: '🧥', label: 'Jacket' },
+/* ─── Type label (for title display only) ─── */
+const TYPE_LABELS = {
+  fan: 'Fan Version', player: 'Player Version', retro: 'Retro',
+  nba: 'NBA', longsleeve: 'Long Sleeve', short: 'Shorts',
+  infant: 'Infant Kit', windbreaker: 'Windbreaker', jacket: 'Jacket',
 };
 
 /* ─── Size surcharge ─── */
@@ -65,15 +56,24 @@ function getInGroup() {
   return products.filter(p => leagueMatch(p, state.activeLeague));
 }
 
-/* ─── Bar stacking: dynamic top positions ─── */
+/* ─── Bar stacking ─── */
 const HEADER_H = 64;
 function updateBarsStacking() {
   requestAnimationFrame(() => {
     const lbH = leagueBar.offsetHeight;
     const tbH = teamBar.classList.contains('hidden') ? 0 : (teamBar.offsetHeight || 42);
     teamBar.style.top = (HEADER_H + lbH) + 'px';
-    typeBar.style.top  = (HEADER_H + lbH + tbH) + 'px';
   });
+}
+
+/* ─── Scroll to products ─── */
+function scrollToProducts() {
+  const productsEl = document.getElementById('products');
+  if (!productsEl) return;
+  const stickiesH = HEADER_H + leagueBar.offsetHeight +
+    (teamBar.classList.contains('hidden') ? 0 : (teamBar.offsetHeight || 42));
+  const top = productsEl.getBoundingClientRect().top + window.scrollY - stickiesH - 12;
+  window.scrollTo({ top, behavior: 'smooth' });
 }
 
 /* ─── Team sub-bar ─── */
@@ -111,52 +111,8 @@ function updateTeamBar() {
         btn.classList.add('active');
         state.activeTeam = btn.dataset.team;
       }
-      updateTypeBar();
       renderCatalog();
-    });
-  });
-
-  updateBarsStacking();
-}
-
-/* ─── Type sub-bar ─── */
-function updateTypeBar() {
-  const inGroup = getInGroup();
-  const typeCounts = {};
-  inGroup.forEach(p => { typeCounts[p.category] = (typeCounts[p.category] || 0) + 1; });
-  const availableTypes = Object.keys(typeCounts);
-
-  if (availableTypes.length <= 1) {
-    typeBar.style.display = 'none';
-    state.activeType = 'all';
-    updateBarsStacking();
-    return;
-  }
-
-  typeBar.style.display = '';
-  const ORDER = ['fan', 'player', 'retro', 'nba', 'longsleeve', 'short', 'infant', 'windbreaker', 'jacket'];
-  const sorted = ORDER.filter(t => availableTypes.includes(t));
-
-  const pills = [`<button class="fpill type-pill active" data-type="all">All (${inGroup.length})</button>`];
-  for (const t of sorted) {
-    const meta = TYPE_ICONS[t];
-    if (!meta) continue;
-    pills.push(
-      `<button class="fpill type-pill" data-type="${t}">
-        ${meta.icon} ${meta.label} <span class="pill-count">${typeCounts[t]}</span>
-      </button>`
-    );
-  }
-
-  typeList.innerHTML = pills.join('');
-  state.activeType = 'all';
-
-  typeList.querySelectorAll('.type-pill').forEach(btn => {
-    btn.addEventListener('click', () => {
-      typeList.querySelectorAll('.type-pill').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      state.activeType = btn.dataset.type;
-      renderCatalog();
+      scrollToProducts();
     });
   });
 
@@ -206,33 +162,25 @@ function renderCatalog() {
     const groupOk  = state.activeTeam
       ? p.team === state.activeTeam
       : leagueMatch(p, state.activeLeague);
-    const typeOk   = state.activeType === 'all' || p.category === state.activeType;
     const searchOk = !q ||
       p.name.toLowerCase().includes(q) ||
       p.team.toLowerCase().includes(q) ||
       p.league.toLowerCase().includes(q) ||
       (p.conference || '').toLowerCase().includes(q) ||
       CATEGORY_META[p.category].label.toLowerCase().includes(q);
-    return groupOk && typeOk && searchOk;
+    return groupOk && searchOk;
   });
 
   grid.innerHTML = filtered.map(buildCard).join('');
   countBadge.textContent = `${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
   noResults.classList.toggle('hidden', filtered.length > 0);
 
-  const typeName = state.activeType !== 'all' ? (TYPE_ICONS[state.activeType]?.label || state.activeType) : '';
   if (q) {
     titleEl.textContent = `RESULTS — "${q.toUpperCase()}"`;
   } else if (state.activeTeam) {
-    titleEl.textContent = typeName
-      ? `${state.activeTeam.toUpperCase()} — ${typeName.toUpperCase()}`
-      : state.activeTeam.toUpperCase();
-  } else if (state.activeLeague !== 'all' && typeName) {
-    titleEl.textContent = `${state.activeLeague.toUpperCase()} — ${typeName.toUpperCase()}`;
+    titleEl.textContent = state.activeTeam.toUpperCase();
   } else if (state.activeLeague !== 'all') {
     titleEl.textContent = state.activeLeague.toUpperCase();
-  } else if (typeName) {
-    titleEl.textContent = typeName.toUpperCase();
   } else {
     titleEl.textContent = 'ALL PRODUCTS';
   }
@@ -541,13 +489,7 @@ function navigateTo(view, productId) {
 
   const showFilters = view === 'catalog';
   leagueBar.style.display = showFilters ? '' : 'none';
-  if (!showFilters) {
-    teamBar.style.display = 'none';
-    typeBar.style.display  = 'none';
-  } else {
-    teamBar.style.display = '';
-    typeBar.style.display  = '';
-  }
+  teamBar.style.display   = showFilters ? '' : 'none';
 
   document.querySelector('.hero')?.style.setProperty('display', view === 'catalog' ? '' : 'none');
   document.getElementById('siteFooter').style.display = view === 'product' ? 'none' : '';
@@ -561,7 +503,6 @@ function navigateTo(view, productId) {
     renderCartPage();
   } else if (view === 'catalog') {
     updateTeamBar();
-    updateTypeBar();
     renderCatalog();
   }
 }
@@ -580,7 +521,6 @@ function goHome(event) {
   history.pushState({ view: 'catalog' }, '', window.location.pathname);
   state.activeLeague = 'all';
   state.activeTeam   = '';
-  state.activeType   = 'all';
   state.searchQuery  = '';
   searchInput.value  = '';
   searchClear.style.display = 'none';
@@ -617,8 +557,8 @@ leagueBar.addEventListener('click', e => {
   }
 
   updateTeamBar();
-  updateTypeBar();
   renderCatalog();
+  scrollToProducts();
 });
 
 /* ─── Search ─── */
@@ -647,15 +587,6 @@ window.addEventListener('scroll', () => {
     window.scrollY > 10 ? '0 2px 16px rgba(0,0,0,.5)' : 'none';
 });
 
-/* ─── Pill count style ─── */
-const pillStyle = document.createElement('style');
-pillStyle.textContent = `
-  .pill-count { font-size:9px; background:rgba(0,0,0,.3); padding:1px 5px; border-radius:8px; margin-left:3px; }
-  .type-pill.active .pill-count { background:rgba(0,0,0,.25); }
-  .shake { animation: shake 0.4s ease; }
-  @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
-`;
-document.head.appendChild(pillStyle);
 
 /* ─── Init ─── */
 updateCartBadge();
