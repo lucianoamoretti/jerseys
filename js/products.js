@@ -3,9 +3,9 @@
 const CATEGORY_META = {
   'fan':         { label:'Fan Version',    icon:'⚽', price:27.90,  color:'#0a1628' },
   'player':      { label:'Player Version', icon:'🌟', price:34.90,  color:'#0a0a1a' },
-  'retro':       { label:'Retro',          icon:'👔', price:34.90,  color:'#1a1000' },
+  'retro':       { label:'Retro',          icon:'👔', price:37.90,  color:'#1a1000' },
   'nba':         { label:'NBA',            icon:'🏀', price:39.90,  color:'#1a0808' },
-  'longsleeve':  { label:'Long Sleeve',    icon:'🥼', price:32.90,  color:'#0a1020' },
+  'longsleeve':  { label:'Long Sleeve',    icon:'🥼', price:37.90,  color:'#0a1020' },
   'short':       { label:'Shorts',         icon:'🩳', price:24.90,  color:'#0a1a0a' },
   'infant':      { label:'Infant Kit',     icon:'👶', price:29.90,  color:'#0a1a1a' },
   'windbreaker': { label:'Windbreaker',    icon:'🧥', price:64.90,  color:'#111118' },
