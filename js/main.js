@@ -66,11 +66,14 @@ function getInGroup() {
 }
 
 /* ─── Bar stacking: dynamic top positions ─── */
+const HEADER_H = 64;
 function updateBarsStacking() {
-  const lbH = leagueBar.offsetHeight;
-  const tbH = teamBar.classList.contains('hidden') ? 0 : teamBar.offsetHeight;
-  teamBar.style.top = lbH + 'px';
-  typeBar.style.top = (lbH + tbH) + 'px';
+  requestAnimationFrame(() => {
+    const lbH = leagueBar.offsetHeight;
+    const tbH = teamBar.classList.contains('hidden') ? 0 : (teamBar.offsetHeight || 42);
+    teamBar.style.top = (HEADER_H + lbH) + 'px';
+    typeBar.style.top  = (HEADER_H + lbH + tbH) + 'px';
+  });
 }
 
 /* ─── Team sub-bar ─── */
@@ -304,6 +307,7 @@ function renderProductPage(id) {
 
       <div class="pp-info-strip">
         <span><i class="fas fa-shipping-fast"></i> €5 shipping · <strong>Free on 4+ items</strong></span>
+        <span><i class="fas fa-clock"></i> Delivery ~20 days</span>
         <span><i class="fab fa-paypal"></i> PayPal accepted</span>
         <span><i class="fas fa-ruler"></i> 2XL +€2 · 3XL/4XL +€3</span>
       </div>
@@ -539,7 +543,10 @@ function navigateTo(view, productId) {
   leagueBar.style.display = showFilters ? '' : 'none';
   if (!showFilters) {
     teamBar.style.display = 'none';
-    typeBar.style.display = 'none';
+    typeBar.style.display  = 'none';
+  } else {
+    teamBar.style.display = '';
+    typeBar.style.display  = '';
   }
 
   document.querySelector('.hero')?.style.setProperty('display', view === 'catalog' ? '' : 'none');
