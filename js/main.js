@@ -473,7 +473,7 @@ function orderCartViaWhatsApp() {
   const shippingLine = shipping === 0 ? 'FREE (2+ items)' : `€${shipping.toFixed(2)}`;
 
   const lines = [
-    `👋 Hi! I'd like to order from *Your Jersey Store*:`,
+    `👋 Hi! I'd like to order from *Four Four Two Jersey*:`,
     ``,
     `🛒 *My Order (${state.cart.length} item${state.cart.length !== 1 ? 's' : ''}):*`,
     ``,
