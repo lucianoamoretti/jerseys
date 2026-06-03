@@ -36,22 +36,28 @@
     <!-- Header -->
     <header class="header" id="header">
         <div class="container header-inner">
-            <a href="#" class="logo">
+            <a href="#" class="logo" onclick="goHome(event)">
                 <span class="logo-ball">⚽</span>
                 <div>
                     <span class="logo-name">YOUR JERSEY STORE</span>
                     <span class="logo-tagline">Football &amp; Basketball — Fast Delivery</span>
                 </div>
             </a>
-            <div class="search-wrap">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search team, player, league..." autocomplete="off">
-                <button class="search-clear" id="searchClear"><i class="fas fa-times"></i></button>
+            <div class="header-right">
+                <div class="search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search team, player, league..." autocomplete="off">
+                    <button class="search-clear" id="searchClear"><i class="fas fa-times"></i></button>
+                </div>
+                <button class="cart-btn" id="cartBtn" title="View cart">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-badge hidden" id="cartBadge">0</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Filter Bar 1 — Groups: Football / NBA / Others -->
+    <!-- Filter Bar 1 — Football / NBA -->
     <nav class="filter-bar league-bar" id="leagueBar">
         <div class="fg-row">
             <span class="fg-label">FOOTBALL</span>
@@ -64,6 +70,14 @@
                 <button class="fpill league-pill" data-league="Ligue 1">🇫🇷 Ligue 1</button>
                 <button class="fpill league-pill" data-league="Brasileiro">🇧🇷 Brasileiro</button>
                 <button class="fpill league-pill" data-league="National Teams">🌍 National Teams</button>
+                <button class="fpill league-pill" data-league="Liga Argentina">🇦🇷 Liga Argentina</button>
+                <button class="fpill league-pill" data-league="Liga MX">🇲🇽 Liga MX</button>
+                <button class="fpill league-pill" data-league="MLS">🇺🇸 MLS</button>
+                <button class="fpill league-pill" data-league="Primeira Liga">🇵🇹 Primeira Liga</button>
+                <button class="fpill league-pill" data-league="Eredivisie">🇳🇱 Eredivisie</button>
+                <button class="fpill league-pill" data-league="Scottish Premiership">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scottish</button>
+                <button class="fpill league-pill" data-league="Liga de Chile">🇨🇱 Chile</button>
+                <button class="fpill league-pill" data-league="Other">🌐 Other</button>
             </div>
         </div>
         <div class="fg-row">
@@ -78,79 +92,82 @@
                 <button class="fpill team-pill" data-team="Golden State Warriors">💙 Warriors</button>
             </div>
         </div>
+    </nav>
+
+    <!-- Filter Bar 2 — Teams (dynamic per league) -->
+    <nav class="filter-bar team-bar hidden" id="teamBar">
         <div class="fg-row">
-            <span class="fg-label">OTHERS</span>
-            <div class="fg-pills">
-                <button class="fpill league-pill" data-league="Liga Argentina">🇦🇷 Liga Argentina</button>
-                <button class="fpill league-pill" data-league="Liga MX">🇲🇽 Liga MX</button>
-                <button class="fpill league-pill" data-league="MLS">🇺🇸 MLS</button>
-                <button class="fpill league-pill" data-league="Primeira Liga">🇵🇹 Primeira Liga</button>
-                <button class="fpill league-pill" data-league="Eredivisie">🇳🇱 Eredivisie</button>
-                <button class="fpill league-pill" data-league="Scottish Premiership">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scottish</button>
-                <button class="fpill league-pill" data-league="Liga de Chile">🇨🇱 Chile</button>
-                <button class="fpill league-pill" data-league="Other">🌐 Other</button>
-            </div>
+            <span class="fg-label">TEAMS</span>
+            <div class="fg-pills" id="teamList"></div>
         </div>
     </nav>
 
-    <!-- Filter Bar 2 — Type (dynamic per league, populated by JS) -->
+    <!-- Filter Bar 3 — Type (dynamic) -->
     <nav class="filter-bar type-bar" id="typeBar">
         <div class="container">
-            <div class="filter-scroll" id="typeList">
-                <!-- Populated by main.js based on selected league -->
-            </div>
+            <div class="filter-scroll" id="typeList"></div>
         </div>
     </nav>
 
-    <!-- Hero -->
-    <section class="hero">
-        <div class="hero-overlay"></div>
-        <div class="container hero-inner">
-            <p class="hero-eyebrow">World's Best Football &amp; Basketball Kits</p>
-            <h1 class="hero-title">JERSEY DROPS <span class="accent">2025/26</span></h1>
-            <p class="hero-desc">Fan &amp; player editions, retro classics, NBA and more. Customization available on all jerseys.</p>
-            <div class="hero-stats">
-                <div class="hstat"><span class="hnum">736</span><span class="hlabel">Jerseys</span></div>
-                <div class="hstat-div"></div>
-                <div class="hstat"><span class="hnum">15+</span><span class="hlabel">Leagues</span></div>
-                <div class="hstat-div"></div>
-                <div class="hstat"><span class="hnum">€22.90</span><span class="hlabel">Starting at</span></div>
-            </div>
-            <a href="#products" class="hero-cta">Browse All Jerseys <i class="fas fa-arrow-down"></i></a>
-        </div>
-    </section>
+    <!-- ═══ VIEW: CATALOG ═══ -->
+    <div id="viewCatalog">
 
-    <!-- Products -->
-    <section class="products-section" id="products">
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero-overlay"></div>
+            <div class="container hero-inner">
+                <p class="hero-eyebrow">World's Best Football &amp; Basketball Kits</p>
+                <h1 class="hero-title">JERSEY DROPS <span class="accent">2025/26</span></h1>
+                <p class="hero-desc">Fan &amp; player editions, retro classics, NBA and more. Customization available on all jerseys.</p>
+                <div class="hero-stats">
+                    <div class="hstat"><span class="hnum">700+</span><span class="hlabel">Jerseys</span></div>
+                    <div class="hstat-div"></div>
+                    <div class="hstat"><span class="hnum">15+</span><span class="hlabel">Leagues</span></div>
+                    <div class="hstat-div"></div>
+                    <div class="hstat"><span class="hnum">€22.90</span><span class="hlabel">Starting at</span></div>
+                </div>
+                <a href="#products" class="hero-cta">Browse All Jerseys <i class="fas fa-arrow-down"></i></a>
+            </div>
+        </section>
+
+        <!-- Products -->
+        <section class="products-section" id="products">
+            <div class="container">
+                <div class="products-header">
+                    <h2 class="section-title" id="sectionTitle">ALL PRODUCTS</h2>
+                    <span class="count-tag" id="countBadge">– items</span>
+                </div>
+                <div class="product-grid" id="productGrid"></div>
+                <div class="no-results hidden" id="noResults">
+                    <i class="fas fa-search-minus"></i>
+                    <p>No jerseys found. Try a different filter.</p>
+                </div>
+            </div>
+        </section>
+
+    </div><!-- /viewCatalog -->
+
+    <!-- ═══ VIEW: PRODUCT PAGE ═══ -->
+    <div id="viewProduct" class="view-section hidden">
+        <div class="vp-topbar container">
+            <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Back</button>
+        </div>
         <div class="container">
-            <div class="products-header">
-                <h2 class="section-title" id="sectionTitle">ALL PRODUCTS</h2>
-                <span class="count-tag" id="countBadge">– items</span>
-            </div>
-            <div class="product-grid" id="productGrid"></div>
-            <div class="no-results hidden" id="noResults">
-                <i class="fas fa-search-minus"></i>
-                <p>No jerseys found. Try a different filter.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Product Modal -->
-    <div class="modal-overlay hidden" id="modalOverlay">
-        <div class="modal-box" id="modalBox">
-            <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
-            <div id="modalContent"></div>
+            <div id="ppContent" class="pp-content"></div>
         </div>
     </div>
+
+    <!-- ═══ VIEW: CART ═══ -->
+    <div id="viewCart" class="view-section hidden"></div>
 
     <!-- WhatsApp FAB -->
     <a class="wa-fab" href="https://wa.me/353831917032?text=Hi!%20I'm%20interested%20in%20ordering%20a%20jersey%20from%20Your%20Jersey%20Store." target="_blank" rel="noopener">
         <i class="fab fa-whatsapp"></i>
-        <span>Order Now</span>
+        <span>Chat</span>
     </a>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer" id="siteFooter">
         <div class="container footer-grid">
             <div class="footer-brand">
                 <div class="footer-logo">⚽ YOUR JERSEY STORE</div>
@@ -182,7 +199,7 @@
                     <li>🇧🇷 Brasileiro</li>
                     <li>🌍 National Teams</li>
                     <li>🏀 NBA</li>
-                    <li>+ 10 more leagues</li>
+                    <li>+ more leagues</li>
                 </ul>
             </div>
             <div class="footer-col">

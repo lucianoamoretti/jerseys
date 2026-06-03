@@ -1,28 +1,34 @@
 /* =====================================================
    YOUR JERSEY STORE — Main Logic
-   Filter: League (bar 1) → Type subcategory (bar 2, dynamic)
+   SPA routing | Team submenu | Cart | WhatsApp order
    ===================================================== */
 
 const WA_NUMBER = '353831917032';
 
-/* ─── State ─── */
-let activeLeague = 'all';
-let activeTeam   = '';
-let activeType   = 'all';
-let searchQuery  = '';
+const state = {
+  view:            'catalog',
+  activeLeague:    'all',
+  activeTeam:      '',
+  activeType:      'all',
+  searchQuery:     '',
+  currentProductId: null,
+  cart: JSON.parse(localStorage.getItem('yjs_cart') || '[]'),
+};
 
-/* ─── DOM ─── */
-const grid         = document.getElementById('productGrid');
-const noResults    = document.getElementById('noResults');
-const countBadge   = document.getElementById('countBadge');
-const titleEl      = document.getElementById('sectionTitle');
-const searchInput  = document.getElementById('searchInput');
-const searchClear  = document.getElementById('searchClear');
-const modalOverlay = document.getElementById('modalOverlay');
-const modalContent = document.getElementById('modalContent');
-const modalClose   = document.getElementById('modalClose');
-const typeList     = document.getElementById('typeList');
-const typeBar      = document.getElementById('typeBar');
+/* ─── DOM refs ─── */
+const grid        = document.getElementById('productGrid');
+const noResults   = document.getElementById('noResults');
+const countBadge  = document.getElementById('countBadge');
+const titleEl     = document.getElementById('sectionTitle');
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+const typeList    = document.getElementById('typeList');
+const typeBar     = document.getElementById('typeBar');
+const teamList    = document.getElementById('teamList');
+const teamBar     = document.getElementById('teamBar');
+const leagueBar   = document.getElementById('leagueBar');
+const cartBtn     = document.getElementById('cartBtn');
+const cartBadge   = document.getElementById('cartBadge');
 
 /* ─── Type metadata ─── */
 const TYPE_ICONS = {
@@ -37,27 +43,80 @@ const TYPE_ICONS = {
   jacket:      { icon: '🧥', label: 'Jacket' },
 };
 
-/* ─── Size surcharge (EUR) ─── */
+/* ─── Size surcharge ─── */
 function sizeExtra(size) {
   if (size === '2XL') return 2;
   if (size === '3XL' || size === '4XL') return 3;
   return 0;
 }
 
-/* ─── League match (NBA prefix) ─── */
-function leagueMatch(product, leagueFilter) {
-  if (leagueFilter === 'all') return true;
-  if (leagueFilter === 'NBA') return product.league.startsWith('NBA');
-  return product.league === leagueFilter;
+/* ─── League match ─── */
+function leagueMatch(p, filter) {
+  if (filter === 'all') return true;
+  if (filter === 'NBA') return p.league.startsWith('NBA');
+  if (filter === 'NBA East') return p.league === 'NBA East';
+  if (filter === 'NBA West') return p.league === 'NBA West';
+  return p.league === filter;
 }
 
-/* ─── Products matching current group filter (league or team) ─── */
+/* ─── Products in current group ─── */
 function getInGroup() {
-  if (activeTeam) return products.filter(p => p.team === activeTeam);
-  return products.filter(p => leagueMatch(p, activeLeague));
+  if (state.activeTeam) return products.filter(p => p.team === state.activeTeam);
+  return products.filter(p => leagueMatch(p, state.activeLeague));
 }
 
-/* ─── Build dynamic type sub-bar ─── */
+/* ─── Bar stacking: dynamic top positions ─── */
+function updateBarsStacking() {
+  const lbH = leagueBar.offsetHeight;
+  const tbH = teamBar.classList.contains('hidden') ? 0 : teamBar.offsetHeight;
+  teamBar.style.top = lbH + 'px';
+  typeBar.style.top = (lbH + tbH) + 'px';
+}
+
+/* ─── Team sub-bar ─── */
+function updateTeamBar() {
+  const hideTeamBar = state.activeLeague === 'all' || state.activeLeague.startsWith('NBA');
+  if (hideTeamBar) {
+    teamBar.classList.add('hidden');
+    updateBarsStacking();
+    return;
+  }
+
+  const teamsInLeague = [...new Set(
+    products.filter(p => p.league === state.activeLeague).map(p => p.team)
+  )].sort();
+
+  if (teamsInLeague.length === 0) {
+    teamBar.classList.add('hidden');
+    updateBarsStacking();
+    return;
+  }
+
+  teamBar.classList.remove('hidden');
+  const pills = teamsInLeague.map(t =>
+    `<button class="fpill team-bar-pill${state.activeTeam === t ? ' active' : ''}" data-team="${t}">${t}</button>`
+  ).join('');
+  teamList.innerHTML = pills;
+
+  teamList.querySelectorAll('.team-bar-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const wasActive = btn.classList.contains('active');
+      teamList.querySelectorAll('.team-bar-pill').forEach(b => b.classList.remove('active'));
+      if (wasActive) {
+        state.activeTeam = '';
+      } else {
+        btn.classList.add('active');
+        state.activeTeam = btn.dataset.team;
+      }
+      updateTypeBar();
+      renderCatalog();
+    });
+  });
+
+  updateBarsStacking();
+}
+
+/* ─── Type sub-bar ─── */
 function updateTypeBar() {
   const inGroup = getInGroup();
   const typeCounts = {};
@@ -66,7 +125,8 @@ function updateTypeBar() {
 
   if (availableTypes.length <= 1) {
     typeBar.style.display = 'none';
-    activeType = 'all';
+    state.activeType = 'all';
+    updateBarsStacking();
     return;
   }
 
@@ -86,16 +146,18 @@ function updateTypeBar() {
   }
 
   typeList.innerHTML = pills.join('');
-  activeType = 'all';
+  state.activeType = 'all';
 
   typeList.querySelectorAll('.type-pill').forEach(btn => {
     btn.addEventListener('click', () => {
       typeList.querySelectorAll('.type-pill').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      activeType = btn.dataset.type;
-      render();
+      state.activeType = btn.dataset.type;
+      renderCatalog();
     });
   });
+
+  updateBarsStacking();
 }
 
 /* ─── Placeholder ─── */
@@ -108,7 +170,7 @@ function buildPlaceholder(p) {
   </div>`;
 }
 
-/* ─── Build card ─── */
+/* ─── Build catalog card ─── */
 function buildCard(p) {
   const meta  = CATEGORY_META[p.category];
   const price = meta.price;
@@ -120,12 +182,7 @@ function buildCard(p) {
 
   const leagueLabel = p.league.replace('NBA East','East').replace('NBA West','West');
 
-  const sizesHtml = ALL_SIZES.map(s => {
-    const ex = sizeExtra(s);
-    return `<span class="sz${ex ? ' plus' : ''}">${s}${ex ? ` +€${ex}` : ''}</span>`;
-  }).join('');
-
-  return `<div class="product-card" onclick="openModal(${p.id})">
+  return `<div class="product-card" onclick="openProduct(${p.id})">
     ${imgHtml}
     <div class="product-body">
       <div class="product-cat-tag">${meta.label}</div>
@@ -134,21 +191,19 @@ function buildCard(p) {
         <span class="product-price">${label}</span>
         <span class="product-badge">${leagueLabel}</span>
       </div>
-      <div class="product-sizes">${sizesHtml}</div>
-      <button class="order-btn" onclick="event.stopPropagation();quickOrder(${p.id})">
-        <i class="fab fa-whatsapp"></i> Order on WhatsApp
-      </button>
     </div>
   </div>`;
 }
 
-/* ─── Render ─── */
-function render() {
-  const q = searchQuery.toLowerCase().trim();
+/* ─── Render catalog ─── */
+function renderCatalog() {
+  const q = state.searchQuery.toLowerCase().trim();
 
   const filtered = products.filter(p => {
-    const groupOk  = activeTeam ? p.team === activeTeam : leagueMatch(p, activeLeague);
-    const typeOk   = activeType === 'all' || p.category === activeType;
+    const groupOk  = state.activeTeam
+      ? p.team === state.activeTeam
+      : leagueMatch(p, state.activeLeague);
+    const typeOk   = state.activeType === 'all' || p.category === state.activeType;
     const searchOk = !q ||
       p.name.toLowerCase().includes(q) ||
       p.team.toLowerCase().includes(q) ||
@@ -162,15 +217,17 @@ function render() {
   countBadge.textContent = `${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
   noResults.classList.toggle('hidden', filtered.length > 0);
 
-  const typeName = activeType !== 'all' ? (TYPE_ICONS[activeType]?.label || activeType) : '';
+  const typeName = state.activeType !== 'all' ? (TYPE_ICONS[state.activeType]?.label || state.activeType) : '';
   if (q) {
     titleEl.textContent = `RESULTS — "${q.toUpperCase()}"`;
-  } else if (activeTeam) {
-    titleEl.textContent = typeName ? `${activeTeam.toUpperCase()} — ${typeName.toUpperCase()}` : activeTeam.toUpperCase();
-  } else if (activeLeague !== 'all' && typeName) {
-    titleEl.textContent = `${activeLeague.toUpperCase()} — ${typeName.toUpperCase()}`;
-  } else if (activeLeague !== 'all') {
-    titleEl.textContent = activeLeague.toUpperCase();
+  } else if (state.activeTeam) {
+    titleEl.textContent = typeName
+      ? `${state.activeTeam.toUpperCase()} — ${typeName.toUpperCase()}`
+      : state.activeTeam.toUpperCase();
+  } else if (state.activeLeague !== 'all' && typeName) {
+    titleEl.textContent = `${state.activeLeague.toUpperCase()} — ${typeName.toUpperCase()}`;
+  } else if (state.activeLeague !== 'all') {
+    titleEl.textContent = state.activeLeague.toUpperCase();
   } else if (typeName) {
     titleEl.textContent = typeName.toUpperCase();
   } else {
@@ -178,40 +235,10 @@ function render() {
   }
 }
 
-/* ─── League / team filter ─── */
-document.getElementById('leagueBar').addEventListener('click', e => {
-  const btn = e.target.closest('.fpill');
-  if (!btn) return;
-  document.querySelectorAll('#leagueBar .fpill').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  if (btn.dataset.team) {
-    activeTeam   = btn.dataset.team;
-    activeLeague = 'all';
-  } else {
-    activeTeam   = '';
-    activeLeague = btn.dataset.league || 'all';
-  }
-  updateTypeBar();
-  render();
-});
-
-/* ─── Search ─── */
-searchInput.addEventListener('input', () => {
-  searchQuery = searchInput.value;
-  searchClear.style.display = searchQuery ? 'block' : 'none';
-  render();
-});
-
-searchClear.addEventListener('click', () => {
-  searchInput.value = '';
-  searchQuery = '';
-  searchClear.style.display = 'none';
-  render();
-});
-
-/* ─── MODAL ─── */
-function openModal(id) {
+/* ─── Product page ─── */
+function renderProductPage(id) {
   const p    = products.find(x => x.id === id);
+  if (!p) { navigateTo('catalog'); return; }
   const meta = CATEGORY_META[p.category];
   const bp   = meta.price;
   const isJacket = p.category === 'jacket';
@@ -221,44 +248,52 @@ function openModal(id) {
     ? ` · ${p.conference}` : '';
 
   const imgHtml = p.image
-    ? `<img class="m-img" src="${p.image}" alt="${p.name}">`
-    : `<div class="m-placeholder" style="background:radial-gradient(circle at 50% 50%,${meta.color} 0%,#0b0b0b 100%)">${meta.icon}</div>`;
+    ? `<img class="pp-img" src="${p.image}" alt="${p.name}">`
+    : `<div class="pp-placeholder" style="background:radial-gradient(circle at 50% 50%,${meta.color} 0%,#0b0b0b 100%)">${meta.icon}</div>`;
 
   const sizeBtns = ALL_SIZES.map(s => {
     const ex = sizeExtra(s);
-    return `<button class="size-btn" data-size="${s}" data-extra="${ex}" onclick="selectSize(this)">
+    return `<button class="pp-size-btn" data-size="${s}" data-extra="${ex}" onclick="ppSelectSize(this)">
       ${s}${ex ? `<span class="size-surcharge">+€${ex}</span>` : ''}
     </button>`;
   }).join('');
 
-  modalContent.innerHTML = `
-    ${imgHtml}
-    <div class="m-body">
-      <div class="m-cat">${meta.label} · ${p.league}${confLine}</div>
-      <div class="m-name">${p.name}</div>
-      <div class="m-league">${p.team}</div>
-      <div class="m-price-row">
+  const ppContent = document.getElementById('ppContent');
+  ppContent.innerHTML = `
+    <div class="pp-img-wrap">
+      ${imgHtml}
+    </div>
+    <div class="pp-details">
+      <div class="pp-cat">${meta.label} · ${p.league}${confLine}</div>
+      <h1 class="pp-name">${p.name}</h1>
+      <div class="pp-team">${p.team}</div>
+      <div class="pp-price-row">
         <div>
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Base price</div>
-          <div class="m-base-price">${priceLabel}</div>
+          <div class="pp-price-label">Base price</div>
+          <div class="pp-base-price">${priceLabel}</div>
         </div>
-        <div class="m-total-box">
-          <div class="m-total-label">Your total</div>
-          <div class="m-total-price" id="mTotal">${priceLabel}</div>
+        <div class="pp-total-box">
+          <div class="pp-total-label">Your total</div>
+          <div class="pp-total-val" id="ppTotal">${priceLabel}</div>
         </div>
       </div>
-      <div class="m-section-label">Select size</div>
-      <div class="size-selector">${sizeBtns}</div>
-      <div class="m-section-label">Add-ons</div>
+
+      <div class="pp-section-label">Select size</div>
+      <div class="pp-size-selector" id="ppSizes">${sizeBtns}</div>
+      <div class="pp-error hidden" id="ppSizeError">
+        <i class="fas fa-exclamation-circle"></i> Please select a size before adding to cart.
+      </div>
+
+      <div class="pp-section-label">Add-ons</div>
       <div class="addon-toggles">
-        <div class="addon-toggle" data-price="6" onclick="toggleAddon(this)">
+        <div class="addon-toggle" data-price="6" onclick="ppToggleAddon(this)">
           <div class="addon-left">
             <span class="addon-icon">✂️</span>
             <div><div class="addon-name">Customization</div><div class="addon-desc">Name &amp; number on jersey</div></div>
           </div>
           <span class="addon-price">+€6</span>
         </div>
-        <div class="addon-toggle" data-price="2" onclick="toggleAddon(this)">
+        <div class="addon-toggle" data-price="2" onclick="ppToggleAddon(this)">
           <div class="addon-left">
             <span class="addon-icon">📌</span>
             <div><div class="addon-name">Patch</div><div class="addon-desc">League or competition badge</div></div>
@@ -266,105 +301,363 @@ function openModal(id) {
           <span class="addon-price">+€2</span>
         </div>
       </div>
-      <div class="m-info-strip">
+
+      <div class="pp-info-strip">
         <span><i class="fas fa-shipping-fast"></i> €5 shipping · <strong>Free on 4+ items</strong></span>
         <span><i class="fab fa-paypal"></i> PayPal accepted</span>
         <span><i class="fas fa-ruler"></i> 2XL +€2 · 3XL/4XL +€3</span>
       </div>
-      <button class="m-order-btn" onclick="orderFromModal(${p.id})">
-        <i class="fab fa-whatsapp"></i> Order on WhatsApp — <span id="mBtnTotal">${priceLabel}</span>
+
+      <button class="pp-add-btn" id="ppAddBtn" onclick="addToCart(${p.id})">
+        <i class="fas fa-shopping-bag"></i> Add to Cart — <span id="ppBtnTotal">${priceLabel}</span>
       </button>
     </div>`;
-
-  modalOverlay.classList.remove('hidden');
-  document.body.style.overflow = 'hidden';
 }
 
-function selectSize(btn) {
-  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+function ppSelectSize(btn) {
+  document.querySelectorAll('#ppSizes .pp-size-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
-  updateTotal();
+  const errEl = document.getElementById('ppSizeError');
+  if (errEl) errEl.classList.add('hidden');
+  ppUpdateTotal();
 }
 
-function toggleAddon(el) {
+function ppToggleAddon(el) {
   el.classList.toggle('active');
-  updateTotal();
+  ppUpdateTotal();
 }
 
-function updateTotal() {
-  const basePriceEl = document.querySelector('.m-base-price');
-  const totalEl     = document.getElementById('mTotal');
-  const btnTotalEl  = document.getElementById('mBtnTotal');
+function ppUpdateTotal() {
+  const basePriceEl = document.querySelector('.pp-base-price');
+  const totalEl     = document.getElementById('ppTotal');
+  const btnTotalEl  = document.getElementById('ppBtnTotal');
   if (!basePriceEl || !totalEl) return;
   const base = parseFloat(basePriceEl.textContent.replace('€','').split('–')[0]);
   let total = base;
-  const selSize = document.querySelector('.size-btn.selected');
+  const selSize = document.querySelector('#ppSizes .pp-size-btn.selected');
   if (selSize) total += parseFloat(selSize.dataset.extra || 0);
-  document.querySelectorAll('.addon-toggle.active').forEach(a => { total += parseFloat(a.dataset.price || 0); });
+  document.querySelectorAll('#ppContent .addon-toggle.active').forEach(a => { total += parseFloat(a.dataset.price || 0); });
   const fmt = `€${total.toFixed(2)}`;
   totalEl.textContent = fmt;
   if (btnTotalEl) btnTotalEl.textContent = fmt;
 }
 
-/* ─── WhatsApp ─── */
-function buildMsg(p, size, addons) {
+/* ─── Cart ─── */
+function addToCart(productId) {
+  const sizeBtn = document.querySelector('#ppSizes .pp-size-btn.selected');
+  if (!sizeBtn) {
+    const errEl  = document.getElementById('ppSizeError');
+    const addBtn = document.getElementById('ppAddBtn');
+    if (errEl) errEl.classList.remove('hidden');
+    if (addBtn) { addBtn.classList.add('shake'); setTimeout(() => addBtn.classList.remove('shake'), 500); }
+    return;
+  }
+
+  const p    = products.find(x => x.id === productId);
   const meta = CATEGORY_META[p.category];
-  let total  = meta.price;
-  const ex   = size ? sizeExtra(size) : 0;
-  total += ex;
-  const addonLines = addons.map(a => { total += a.price; return `• ${a.name}: +€${a.price}`; });
-  return encodeURIComponent([
+  const size = sizeBtn.dataset.size;
+  const ex   = parseFloat(sizeBtn.dataset.extra || 0);
+  const addons = [...document.querySelectorAll('#ppContent .addon-toggle.active')].map(a => ({
+    name:  a.querySelector('.addon-name').textContent,
+    price: parseFloat(a.dataset.price),
+  }));
+  const addonTotal = addons.reduce((s, a) => s + a.price, 0);
+  const total = meta.price + ex + addonTotal;
+
+  state.cart.push({
+    cartId:        Date.now(),
+    productId:     p.id,
+    name:          p.name,
+    category:      p.category,
+    categoryLabel: meta.label,
+    league:        p.league,
+    image:         p.image,
+    size,
+    addons,
+    basePrice:     meta.price,
+    total,
+  });
+
+  saveCart();
+
+  const addBtn = document.getElementById('ppAddBtn');
+  if (addBtn) {
+    const original = addBtn.innerHTML;
+    addBtn.innerHTML = '<i class="fas fa-check"></i> Added to Cart!';
+    addBtn.style.background = '#1db954';
+    setTimeout(() => {
+      addBtn.innerHTML = original;
+      addBtn.style.background = '';
+    }, 1800);
+  }
+}
+
+function removeFromCart(cartId) {
+  state.cart = state.cart.filter(item => item.cartId !== cartId);
+  saveCart();
+  updateCartBadge();
+  renderCartPage();
+}
+
+function saveCart() {
+  localStorage.setItem('yjs_cart', JSON.stringify(state.cart));
+  updateCartBadge();
+}
+
+function updateCartBadge() {
+  const count = state.cart.length;
+  cartBadge.textContent = count;
+  cartBadge.classList.toggle('hidden', count === 0);
+}
+
+/* ─── Cart page ─── */
+function renderCartPage() {
+  const cartView = document.getElementById('viewCart');
+  if (state.cart.length === 0) {
+    cartView.innerHTML = `
+      <div class="container">
+        <div class="cart-empty">
+          <i class="fas fa-shopping-bag"></i>
+          <h2>Your cart is empty</h2>
+          <p>Browse our jerseys and add something you love.</p>
+          <button class="cart-browse-btn" onclick="navigateTo('catalog')">
+            <i class="fas fa-arrow-left"></i> Browse Jerseys
+          </button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const subtotal = state.cart.reduce((s, i) => s + i.total, 0);
+  const shipping = state.cart.length >= 4 ? 0 : 5;
+  const grandTotal = subtotal + shipping;
+
+  const itemsHtml = state.cart.map(item => {
+    const imgHtml = item.image
+      ? `<img class="ci-img" src="${item.image}" alt="${item.name}">`
+      : `<div class="ci-placeholder">${CATEGORY_META[item.category]?.icon || '⚽'}</div>`;
+
+    const addonsText = item.addons.length
+      ? item.addons.map(a => `✓ ${a.name} +€${a.price}`).join(' · ')
+      : '';
+
+    return `<div class="cart-item">
+      ${imgHtml}
+      <div class="ci-details">
+        <div class="ci-name">${item.name}</div>
+        <div class="ci-meta">
+          <span class="ci-cat">${item.categoryLabel}</span>
+          <span class="ci-size">Size: <strong>${item.size}</strong></span>
+        </div>
+        ${addonsText ? `<div class="ci-addons">${addonsText}</div>` : ''}
+      </div>
+      <div class="ci-price">€${item.total.toFixed(2)}</div>
+      <button class="ci-remove" onclick="removeFromCart(${item.cartId})" title="Remove">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>`;
+  }).join('');
+
+  const freeHint = shipping === 0
+    ? `<div class="cs-free-hint"><i class="fas fa-gift"></i> Free shipping on 4+ items!</div>`
+    : `<div class="cs-free-hint"><i class="fas fa-info-circle"></i> Add ${4 - state.cart.length} more item(s) for free shipping</div>`;
+
+  cartView.innerHTML = `
+    <div class="container">
+      <div class="cart-header">
+        <h2 class="cart-title">Your Cart</h2>
+        <span class="cart-count">${state.cart.length} item${state.cart.length !== 1 ? 's' : ''}</span>
+      </div>
+      <div class="cart-layout">
+        <div class="cart-items">${itemsHtml}</div>
+        <div class="cart-summary">
+          <div class="cs-row">
+            <span>Subtotal</span><span>€${subtotal.toFixed(2)}</span>
+          </div>
+          <div class="cs-row cs-shipping">
+            <span>Shipping</span>
+            <span>${shipping === 0 ? '<span class="free-ship">FREE</span>' : `€${shipping.toFixed(2)}`}</span>
+          </div>
+          ${freeHint}
+          <div class="cs-row cs-total">
+            <span>Total</span><span>€${grandTotal.toFixed(2)}</span>
+          </div>
+          <button class="cart-wa-btn" onclick="orderCartViaWhatsApp()">
+            <i class="fab fa-whatsapp"></i> Order on WhatsApp — €${grandTotal.toFixed(2)}
+          </button>
+          <button class="cart-browse-btn" onclick="navigateTo('catalog')" style="width:100%;margin-top:10px;background:transparent;border:1px solid var(--border);color:var(--muted)">
+            <i class="fas fa-arrow-left"></i> Continue Shopping
+          </button>
+          <div class="cs-paypal"><i class="fab fa-paypal"></i> PayPal accepted</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ─── WhatsApp multi-item message ─── */
+function orderCartViaWhatsApp() {
+  const subtotal   = state.cart.reduce((s, i) => s + i.total, 0);
+  const shipping   = state.cart.length >= 4 ? 0 : 5;
+  const grandTotal = subtotal + shipping;
+  const shippingLine = shipping === 0 ? 'FREE (4+ items)' : `€${shipping.toFixed(2)}`;
+
+  const lines = [
     `👋 Hi! I'd like to order from *Your Jersey Store*:`,
     ``,
-    `🛒 *${p.name}*`,
-    `📂 ${meta.label}  |  ${p.league}`,
-    `📏 Size: ${size || 'Not selected'}${ex ? ` (+€${ex})` : ''}`,
-    ...addonLines,
+    `🛒 *My Order (${state.cart.length} item${state.cart.length !== 1 ? 's' : ''}):*`,
     ``,
-    `💰 Total: €${total.toFixed(2)}`,
-    ``,
-    `Please confirm availability. Thank you!`
-  ].join('\n'));
+  ];
+
+  state.cart.forEach((item, i) => {
+    lines.push(`${i + 1}. *${item.name}*`);
+    lines.push(`   📂 ${item.categoryLabel}  |  ${item.league}`);
+    lines.push(`   📏 Size: ${item.size}`);
+    item.addons.forEach(a => lines.push(`   ✅ ${a.name}: +€${a.price}`));
+    lines.push(`   💰 €${item.total.toFixed(2)}`);
+    lines.push(``);
+  });
+
+  lines.push(`━━━━━━━━━━━━━━━`);
+  lines.push(`💰 Subtotal: €${subtotal.toFixed(2)}`);
+  lines.push(`🚚 Shipping: ${shippingLine}`);
+  lines.push(`💳 *Total: €${grandTotal.toFixed(2)}*`);
+  lines.push(``);
+  lines.push(`Please confirm availability. Thank you!`);
+
+  window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank');
 }
 
-function orderFromModal(id) {
-  const p      = products.find(x => x.id === id);
-  const size   = document.querySelector('.size-btn.selected')?.dataset.size || null;
-  const addons = [...document.querySelectorAll('.addon-toggle.active')].map(a => ({
-    name: a.querySelector('.addon-name').textContent,
-    price: parseFloat(a.dataset.price)
-  }));
-  window.open(`https://wa.me/${WA_NUMBER}?text=${buildMsg(p, size, addons)}`, '_blank');
+/* ─── SPA navigation ─── */
+function navigateTo(view, productId) {
+  state.view = view;
+
+  document.getElementById('viewCatalog').classList.toggle('hidden', view !== 'catalog');
+  document.getElementById('viewProduct').classList.toggle('hidden', view !== 'product');
+  document.getElementById('viewCart').classList.toggle('hidden',   view !== 'cart');
+
+  const showFilters = view === 'catalog';
+  leagueBar.style.display = showFilters ? '' : 'none';
+  if (!showFilters) {
+    teamBar.style.display = 'none';
+    typeBar.style.display = 'none';
+  }
+
+  document.querySelector('.hero')?.style.setProperty('display', view === 'catalog' ? '' : 'none');
+  document.getElementById('siteFooter').style.display = view === 'product' ? 'none' : '';
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (view === 'product' && productId != null) {
+    state.currentProductId = productId;
+    renderProductPage(productId);
+  } else if (view === 'cart') {
+    renderCartPage();
+  } else if (view === 'catalog') {
+    updateTeamBar();
+    updateTypeBar();
+    renderCatalog();
+  }
 }
 
-function quickOrder(id) {
-  const p = products.find(x => x.id === id);
-  window.open(`https://wa.me/${WA_NUMBER}?text=${buildMsg(p, null, [])}`, '_blank');
+function openProduct(id) {
+  history.pushState({ view: 'product', id }, '', `#product-${id}`);
+  navigateTo('product', id);
 }
 
-/* ─── Close modal ─── */
-modalClose.addEventListener('click', closeModal);
-modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-function closeModal() {
-  modalOverlay.classList.add('hidden');
-  document.body.style.overflow = '';
+function goBack() {
+  history.back();
 }
 
-/* ─── Sticky shadow ─── */
+function goHome(event) {
+  event.preventDefault();
+  history.pushState({ view: 'catalog' }, '', window.location.pathname);
+  state.activeLeague = 'all';
+  state.activeTeam   = '';
+  state.activeType   = 'all';
+  state.searchQuery  = '';
+  searchInput.value  = '';
+  searchClear.style.display = 'none';
+  document.querySelectorAll('#leagueBar .fpill').forEach(b => b.classList.remove('active'));
+  document.querySelector('#leagueBar .fpill[data-league="all"]')?.classList.add('active');
+  navigateTo('catalog');
+}
+
+/* ─── Browser back/forward ─── */
+window.addEventListener('popstate', () => {
+  const hash = window.location.hash;
+  if (hash === '#cart') {
+    navigateTo('cart');
+  } else {
+    const m = hash.match(/^#product-(\d+)$/);
+    if (m) navigateTo('product', parseInt(m[1]));
+    else   navigateTo('catalog');
+  }
+});
+
+/* ─── League/team click handler ─── */
+leagueBar.addEventListener('click', e => {
+  const btn = e.target.closest('.fpill');
+  if (!btn) return;
+  document.querySelectorAll('#leagueBar .fpill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  if (btn.dataset.team) {
+    state.activeTeam   = btn.dataset.team;
+    state.activeLeague = 'all';
+  } else {
+    state.activeTeam   = '';
+    state.activeLeague = btn.dataset.league || 'all';
+  }
+
+  updateTeamBar();
+  updateTypeBar();
+  renderCatalog();
+});
+
+/* ─── Search ─── */
+searchInput.addEventListener('input', () => {
+  state.searchQuery = searchInput.value;
+  searchClear.style.display = state.searchQuery ? 'block' : 'none';
+  renderCatalog();
+});
+
+searchClear.addEventListener('click', () => {
+  searchInput.value = '';
+  state.searchQuery = '';
+  searchClear.style.display = 'none';
+  renderCatalog();
+});
+
+/* ─── Cart button ─── */
+cartBtn.addEventListener('click', () => {
+  history.pushState({ view: 'cart' }, '', '#cart');
+  navigateTo('cart');
+});
+
+/* ─── Sticky header shadow ─── */
 window.addEventListener('scroll', () => {
   document.getElementById('header').style.boxShadow =
     window.scrollY > 10 ? '0 2px 16px rgba(0,0,0,.5)' : 'none';
 });
 
-/* ─── Add pill-count style ─── */
-const style = document.createElement('style');
-style.textContent = `
+/* ─── Pill count style ─── */
+const pillStyle = document.createElement('style');
+pillStyle.textContent = `
   .pill-count { font-size:9px; background:rgba(0,0,0,.3); padding:1px 5px; border-radius:8px; margin-left:3px; }
   .type-pill.active .pill-count { background:rgba(0,0,0,.25); }
+  .shake { animation: shake 0.4s ease; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
 `;
-document.head.appendChild(style);
+document.head.appendChild(pillStyle);
 
 /* ─── Init ─── */
-updateTypeBar();
-render();
+updateCartBadge();
+
+const initHash = window.location.hash;
+if (initHash === '#cart') {
+  navigateTo('cart');
+} else {
+  const m = initHash.match(/^#product-(\d+)$/);
+  if (m) navigateTo('product', parseInt(m[1]));
+  else   navigateTo('catalog');
+}
