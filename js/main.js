@@ -2,7 +2,7 @@
    YOUR JERSEY STORE — Main App Logic
    ===================================================== */
 
-const WA_NUMBER = 'SEUNUMERO'; // TODO: replace with your WhatsApp number
+const WA_NUMBER = '353831917032';
 
 /* ---- State ---- */
 let activeCategory = 'all';
