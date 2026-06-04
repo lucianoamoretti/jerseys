@@ -161,7 +161,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 }
 .fg-pills::-webkit-scrollbar { display: none; }
 
-.team-bar { background: #eef7ef; top: 148px; border-top: 1px solid var(--border); }
+.team-bar { background: #eef7ef; top: 190px; border-top: 1px solid var(--border); }
 .team-bar .fg-pills { flex-wrap: wrap; overflow-x: visible; padding: 8px 12px; }
 
 /* Pills */
@@ -438,7 +438,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 }
 @media (max-width: 640px) {
   #leagueBar { top: 64px; }
-  .team-bar { top: 148px; }
+  .team-bar { top: 190px; }
   .team-bar .fg-pills { flex-wrap: nowrap; overflow-x: auto; }
   .logo-img { height: 38px; }
   .hero-title { font-size: 50px; }
