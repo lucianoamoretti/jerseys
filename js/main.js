@@ -251,6 +251,7 @@ function renderProductPage(id) {
         <i class="fas fa-exclamation-circle"></i> Please select a size before adding to cart.
       </div>
 
+      ${!p.league.startsWith('NBA') ? `
       <div class="pp-section-label">Add-ons</div>
       <div class="addon-toggles">
         <div class="addon-toggle" data-addon="customization" data-price="6" onclick="ppToggleAddon(this)">
@@ -274,7 +275,7 @@ function renderProductPage(id) {
                  oninput="this.value=this.value.replace(/\D/g,'')">
           <span class="pp-custom-hint">max 2 digits</span>
         </div>
-      </div>
+      </div>` : ''}
 
       <div class="pp-info-strip">
         <span><i class="fas fa-shipping-fast"></i> €5 shipping · <strong>Free on 2+ items</strong></span>
