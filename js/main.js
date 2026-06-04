@@ -253,19 +253,26 @@ function renderProductPage(id) {
 
       <div class="pp-section-label">Add-ons</div>
       <div class="addon-toggles">
-        <div class="addon-toggle" data-price="6" onclick="ppToggleAddon(this)">
+        <div class="addon-toggle" data-addon="customization" data-price="6" onclick="ppToggleAddon(this)">
           <div class="addon-left">
             <span class="addon-icon">✂️</span>
             <div><div class="addon-name">Customization</div><div class="addon-desc">Name &amp; number on jersey</div></div>
           </div>
           <span class="addon-price">+€6</span>
         </div>
-        <div class="addon-toggle" data-price="2" onclick="ppToggleAddon(this)">
-          <div class="addon-left">
-            <span class="addon-icon">📌</span>
-            <div><div class="addon-name">Patch</div><div class="addon-desc">League or competition badge</div></div>
-          </div>
-          <span class="addon-price">+€2</span>
+      </div>
+      <div class="pp-custom-fields hidden" id="ppCustomFields">
+        <div class="pp-custom-row">
+          <label class="pp-custom-label">Name</label>
+          <input type="text" id="ppCustomName" class="pp-custom-input" placeholder="e.g. RONALDO" maxlength="14"
+                 oninput="this.value=this.value.replace(/[^A-Za-zÀ-ÿ\s]/g,'').toUpperCase()">
+          <span class="pp-custom-hint">letters only · max 14</span>
+        </div>
+        <div class="pp-custom-row">
+          <label class="pp-custom-label">Number</label>
+          <input type="text" id="ppCustomNumber" class="pp-custom-input pp-custom-number" placeholder="10" maxlength="2"
+                 oninput="this.value=this.value.replace(/\D/g,'')">
+          <span class="pp-custom-hint">max 2 digits</span>
         </div>
       </div>
 
@@ -298,6 +305,18 @@ function ppSelectSize(btn) {
 
 function ppToggleAddon(el) {
   el.classList.toggle('active');
+  if (el.dataset.addon === 'customization') {
+    const fields = document.getElementById('ppCustomFields');
+    if (fields) {
+      fields.classList.toggle('hidden', !el.classList.contains('active'));
+      if (!el.classList.contains('active')) {
+        const n = document.getElementById('ppCustomName');
+        const num = document.getElementById('ppCustomNumber');
+        if (n) n.value = '';
+        if (num) num.value = '';
+      }
+    }
+  }
   ppUpdateTotal();
 }
 
@@ -338,6 +357,9 @@ function addToCart(productId) {
   const addonTotal = addons.reduce((s, a) => s + a.price, 0);
   const total = meta.price + ex + addonTotal;
 
+  const customName   = document.getElementById('ppCustomName')?.value.trim() || '';
+  const customNumber = document.getElementById('ppCustomNumber')?.value.trim() || '';
+
   state.cart.push({
     cartId:        Date.now(),
     productId:     p.id,
@@ -348,6 +370,8 @@ function addToCart(productId) {
     image:         p.image,
     size,
     addons,
+    customName,
+    customNumber,
     basePrice:     meta.price,
     total,
   });
@@ -412,7 +436,16 @@ function renderCartPage() {
       : `<div class="ci-placeholder">${CATEGORY_META[item.category]?.icon || '⚽'}</div>`;
 
     const addonsText = item.addons.length
-      ? item.addons.map(a => `✓ ${a.name} +€${a.price}`).join(' · ')
+      ? item.addons.map(a => {
+          let txt = `✓ ${a.name} +€${a.price}`;
+          if (a.name === 'Customization') {
+            const parts = [];
+            if (item.customName)   parts.push(`Name: ${item.customName}`);
+            if (item.customNumber) parts.push(`#${item.customNumber}`);
+            if (parts.length) txt += ` — ${parts.join(', ')}`;
+          }
+          return txt;
+        }).join(' · ')
       : '';
 
     return `<div class="cart-item">
@@ -473,28 +506,37 @@ function orderCartViaWhatsApp() {
   const subtotal   = state.cart.reduce((s, i) => s + i.total, 0);
   const shipping   = state.cart.length >= 2 ? 0 : 5;
   const grandTotal = subtotal + shipping;
-  const shippingLine = shipping === 0 ? 'FREE (2+ items)' : `€${shipping.toFixed(2)}`;
+  const shippingLine = shipping === 0 ? 'FREE (2+ items)' : `EUR ${shipping.toFixed(2)}`;
 
   const lines = [
-    `👋 Hi! I'd like to order from *Four Four Two Jersey*:`,
+    `Hi! I would like to order from *Four Four Two Jersey*:`,
     ``,
-    `🛒 *My Order (${state.cart.length} item${state.cart.length !== 1 ? 's' : ''}):*`,
+    `*Order - ${state.cart.length} item${state.cart.length !== 1 ? 's' : ''}:*`,
     ``,
   ];
 
   state.cart.forEach((item, i) => {
     lines.push(`${i + 1}. *${item.name}*`);
-    lines.push(`   📂 ${item.categoryLabel}  |  ${item.league}`);
-    lines.push(`   📏 Size: ${item.size}`);
-    item.addons.forEach(a => lines.push(`   ✅ ${a.name}: +€${a.price}`));
-    lines.push(`   💰 €${item.total.toFixed(2)}`);
+    lines.push(`   ${item.categoryLabel} | ${item.league}`);
+    lines.push(`   Size: ${item.size}`);
+    item.addons.forEach(a => {
+      let addonLine = `   + ${a.name}: EUR ${a.price.toFixed(2)}`;
+      if (a.name === 'Customization') {
+        const parts = [];
+        if (item.customName)   parts.push(`Name: ${item.customName}`);
+        if (item.customNumber) parts.push(`Number: ${item.customNumber}`);
+        if (parts.length) addonLine += ` (${parts.join(', ')})`;
+      }
+      lines.push(addonLine);
+    });
+    lines.push(`   EUR ${item.total.toFixed(2)}`);
     lines.push(``);
   });
 
-  lines.push(`━━━━━━━━━━━━━━━`);
-  lines.push(`💰 Subtotal: €${subtotal.toFixed(2)}`);
-  lines.push(`🚚 Shipping: ${shippingLine}`);
-  lines.push(`💳 *Total: €${grandTotal.toFixed(2)}*`);
+  lines.push(`---`);
+  lines.push(`Subtotal: EUR ${subtotal.toFixed(2)}`);
+  lines.push(`Shipping: ${shippingLine}`);
+  lines.push(`*Total: EUR ${grandTotal.toFixed(2)}*`);
   lines.push(``);
   lines.push(`Please confirm availability. Thank you!`);
 

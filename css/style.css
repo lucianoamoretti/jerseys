@@ -306,6 +306,14 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 .addon-desc { font-size: 10px; color: var(--muted); }
 .addon-price { font-size: 13px; font-weight: 700; color: var(--green); }
 
+.pp-custom-fields { margin-top: 10px; padding: 14px; background: var(--green-dim); border: 1px solid var(--green); border-radius: 8px; display: flex; flex-direction: column; gap: 10px; }
+.pp-custom-row { display: flex; align-items: center; gap: 10px; }
+.pp-custom-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--green-d); width: 54px; flex-shrink: 0; }
+.pp-custom-input { flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-family: var(--font-b); background: #fff; color: var(--text); outline: none; transition: border-color var(--trans); }
+.pp-custom-input:focus { border-color: var(--green); }
+.pp-custom-number { max-width: 72px; flex: none; text-align: center; letter-spacing: 2px; }
+.pp-custom-hint { font-size: 10px; color: var(--muted); white-space: nowrap; }
+
 .pp-info-strip { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 20px; padding: 10px 14px; background: var(--bg2); border-radius: 8px; border: 1px solid var(--border); }
 .pp-info-strip span { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
 .pp-info-strip strong { color: var(--green); }
