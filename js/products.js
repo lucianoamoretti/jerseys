@@ -67,8 +67,8 @@ const products = [
   {id:49,name:'Leeds United 26/27 St. Patrick\'s Day',team:'Leeds United',league:'Premier League',category:'fan',conference:'',image:'images/4f3dcb58.jpg',images:['images/4f3dcb58.jpg']}
   {id:50,name:'Everton 26/27 St. Patrick\'s Day',team:'Everton',league:'Premier League',category:'fan',conference:'',image:'images/a11b851c.jpg',images:['images/a11b851c.jpg']}
   {id:51,name:'Aston Villa 26/27 St. Patrick\'s Day',team:'Aston Villa',league:'Premier League',category:'fan',conference:'',image:'images/3bb0beb7.jpg',images:['images/3bb0beb7.jpg']}
-  {id:52,name:'LFC 93/95 Sweat Top',team:'Liverpool',league:'Premier League',category:'fan',conference:'',image:'',images:[]},active:false
-  {id:53,name:'LFC 95/96 Originals Reissue Tee',team:'Liverpool',league:'Premier League',category:'fan',conference:'',image:'',images:[]},active:false
+  {id:52,name:'LFC 93/95 Sweat Top',team:'Liverpool',league:'Premier League',category:'fan',conference:'',image:'',images:[],active:false}
+  {id:53,name:'LFC 95/96 Originals Reissue Tee',team:'Liverpool',league:'Premier League',category:'fan',conference:'',image:'',images:[],active:false}
   {id:54,name:'Arsenal 26/27 Special Edition - Green',team:'Arsenal',league:'Premier League',category:'fan',conference:'',image:'images/a888bfb0.jpg',images:['images/a888bfb0.jpg']}
   {id:55,name:'Aston Villa 26/27 Home',team:'Aston Villa',league:'Premier League',category:'fan',conference:'',image:'images/4a982121.jpg',images:['images/4a982121.jpg']}
   {id:56,name:'Newcastle United 26/27 Home',team:'Newcastle United',league:'Premier League',category:'fan',conference:'',image:'images/6d8dcae2.jpg',images:['images/6d8dcae2.jpg']}
@@ -452,7 +452,7 @@ const products = [
   {id:434,name:'Brazil 2026 Home Away Long-Sleeve Jersey',team:'Brazil',league:'National Teams',category:'longsleeve',conference:'',image:'images/a46b458e.jpg',images:['images/a46b458e.jpg']}
   {id:435,name:'Chivas de Guadalajara 26/27 Third Long Sleeve Jersey',team:'Guadalajara',league:'Liga MX',category:'longsleeve',conference:'',image:'images/574cc68e.jpg',images:['images/574cc68e.jpg']}
   {id:436,name:'Galatasaray 25/26 Retro Edition - Red Long-Sleeved Jersey',team:'Galatasaray',league:'Other',category:'retrolongsleeve',conference:'',image:'images/7664c1cb.jpg',images:['images/7664c1cb.jpg']}
-  {id:437,name:'LFC 95/96 Originals Reissue Tee Long Sleeve',team:'Liverpool',league:'Premier League',category:'longsleeve',conference:'',image:'',images:[]},active:false
+  {id:437,name:'LFC 95/96 Originals Reissue Tee Long Sleeve',team:'Liverpool',league:'Premier League',category:'longsleeve',conference:'',image:'',images:[],active:false}
   {id:438,name:'PSG 25/26 Night Edition Long-Sleeve Jersey',team:'Paris Saint-Germain',league:'Ligue 1',category:'longsleeve',conference:'',image:'images/1654d9e0.jpg',images:['images/1654d9e0.jpg']}
   {id:439,name:'Universidad de Chile 26/27 Long Sleeve Jersey',team:'Universidad de Chile',league:'Liga de Chile',category:'longsleeve',conference:'',image:'images/61d79748.jpg',images:['images/61d79748.jpg']}
   {id:440,name:'Wales 150th Anniversary Edition Long-Sleeve Jersey',team:'Wales',league:'National Teams',category:'longsleeve',conference:'',image:'images/cf3ccf50.jpg',images:['images/cf3ccf50.jpg']}
@@ -517,7 +517,7 @@ const products = [
   {id:499,name:'Spain 2026 Windbreaker White',team:'Spain',league:'National Teams',category:'windbreaker',conference:'',image:'images/ab7602f9f5.jpg',images:['images/ab7602f9f5.jpg']}
   {id:500,name:'Spain 2026 Windbreaker Red',team:'Spain',league:'National Teams',category:'windbreaker',conference:'',image:'images/f2712beba3.jpg',images:['images/f2712beba3.jpg']}
   {id:501,name:'Universidad de Chile 26/27 Originals Jacket',team:'Universidad de Chile',league:'Liga de Chile',category:'jacket',conference:'',image:'images/5aa5f9b453.jpg',images:['images/5aa5f9b453.jpg']}
-  {id:502,name:'LFC 95/96 Track Jacket Top - Green',team:'Liverpool',league:'Premier League',category:'jacket',conference:'',image:'',images:[]},active:false
+  {id:502,name:'LFC 95/96 Track Jacket Top - Green',team:'Liverpool',league:'Premier League',category:'jacket',conference:'',image:'',images:[],active:false}
   {id:503,name:'Colo Colo 26/27 Originals Jacket Black',team:'Colo Colo',league:'Liga de Chile',category:'jacket',conference:'',image:'images/d5d0c64469.jpg',images:['images/d5d0c64469.jpg']}
   {id:504,name:'Brazil 2026 Jordan Anthem Jacket Windbreaker',team:'Brazil',league:'National Teams',category:'jacket',conference:'',image:'images/2488d3d97a.jpg',images:['images/2488d3d97a.jpg']}
   {id:505,name:'Brazil 2026 Men\'s Football Anthem Jacket',team:'Brazil',league:'National Teams',category:'jacket',conference:'',image:'images/c15e30d7.jpg',images:['images/c15e30d7.jpg']}
@@ -633,7 +633,7 @@ const products = [
   {id:615,name:'2023 Washington Wizards Red #3 Trae Young',team:'Washington Wizards',league:'NBA East',category:'nba',conference:'Eastern Conference',image:'images/nba_77280a06.jpg',images:['images/nba_77280a06.jpg']}
   {id:616,name:'2026 Dallas Mavericks Classic #77 Doncic',team:'Dallas Mavericks',league:'NBA West',category:'nba',conference:'Western Conference',image:'images/nba_9d62cec3.jpg',images:['images/nba_9d62cec3.jpg']}
   {id:617,name:'2026 Dallas Mavericks Classic #11',team:'Dallas Mavericks',league:'NBA West',category:'nba',conference:'Western Conference',image:'images/nba_521c4f90.jpg',images:['images/nba_521c4f90.jpg']}
-  {id:618,name:'NBA Jersey',team:'NBA',league:'NBA',category:'nba',conference:'NBA',image:'',images:[]},active:false
+  {id:618,name:'NBA Jersey',team:'NBA',league:'NBA',category:'nba',conference:'NBA',image:'',images:[],active:false}
   {id:619,name:'Dallas Mavericks City Edition #3',team:'Dallas Mavericks',league:'NBA West',category:'nba',conference:'Western Conference',image:'images/nba_1e2bc335.jpg',images:['images/nba_1e2bc335.jpg']}
   {id:620,name:'Dallas Mavericks City Edition #77',team:'Dallas Mavericks',league:'NBA West',category:'nba',conference:'Western Conference',image:'images/nba_f82fad54.jpg',images:['images/nba_f82fad54.jpg']}
   {id:621,name:'Dallas Mavericks City Edition #11',team:'Dallas Mavericks',league:'NBA West',category:'nba',conference:'Western Conference',image:'images/nba_d9d1b614.jpg',images:['images/nba_d9d1b614.jpg']}

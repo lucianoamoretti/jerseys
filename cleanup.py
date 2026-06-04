@@ -284,16 +284,14 @@ for m in product_pattern.finditer(content):
     if not valid_imgs:
         # No valid images — disable
         disabled += 1
-        new_img    = ''
-        imgs_part  = "images:[]"
-        active_part = ',active:false'
+        new_img   = ''
+        imgs_part = "images:[],active:false"
     else:
         if len(valid_imgs) != len(raw_imgs):
             photo_fixes += 1
-        new_img    = valid_imgs[0]
-        imgs_arr   = ','.join(f"'{x}'" for x in valid_imgs)
-        imgs_part  = f"images:[{imgs_arr}]"
-        active_part = ''
+        new_img   = valid_imgs[0]
+        imgs_arr  = ','.join(f"'{x}'" for x in valid_imgs)
+        imgs_part = f"images:[{imgs_arr}]"
 
     # ── 3. Rebuild product line ──
     def esc(s): return re.sub(r"(?<!\\)'", "\\'", s)
@@ -306,7 +304,7 @@ for m in product_pattern.finditer(content):
         f"category:'{category}',"
         f"conference:'{conf}',"
         f"image:'{new_img}',"
-        f"{imgs_part}}}{active_part}"
+        f"{imgs_part}}}"
     )
     new_lines.append(line)
 
