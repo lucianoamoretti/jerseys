@@ -163,16 +163,16 @@ function renderCatalog() {
   const q = state.searchQuery.toLowerCase().trim();
 
   const filtered = activeProducts().filter(p => {
-    const groupOk  = state.activeTeam
+    if (q) {
+      return p.name.toLowerCase().includes(q) ||
+             p.team.toLowerCase().includes(q) ||
+             p.league.toLowerCase().includes(q) ||
+             (p.conference || '').toLowerCase().includes(q) ||
+             CATEGORY_META[p.category].label.toLowerCase().includes(q);
+    }
+    return state.activeTeam
       ? p.team === state.activeTeam
       : leagueMatch(p, state.activeLeague);
-    const searchOk = !q ||
-      p.name.toLowerCase().includes(q) ||
-      p.team.toLowerCase().includes(q) ||
-      p.league.toLowerCase().includes(q) ||
-      (p.conference || '').toLowerCase().includes(q) ||
-      CATEGORY_META[p.category].label.toLowerCase().includes(q);
-    return groupOk && searchOk;
   });
 
   grid.innerHTML = filtered.map(buildCard).join('');
