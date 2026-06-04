@@ -439,6 +439,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 @media (max-width: 640px) {
   #leagueBar { top: 64px; }
   .team-bar { top: 148px; }
+  .team-bar .fg-pills { flex-wrap: nowrap; overflow-x: auto; }
   .logo-img { height: 38px; }
   .hero-title { font-size: 50px; }
   .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
