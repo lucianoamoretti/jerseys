@@ -304,7 +304,7 @@ for m in product_pattern.finditer(content):
         f"category:'{category}',"
         f"conference:'{conf}',"
         f"image:'{new_img}',"
-        f"{imgs_part}}}"
+        f"{imgs_part}}},"
     )
     new_lines.append(line)
 
