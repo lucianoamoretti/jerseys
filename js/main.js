@@ -159,6 +159,8 @@ function buildCard(p) {
 }
 
 /* ─── Render catalog ─── */
+const FEATURED_TEAMS = ['Brazil', 'Argentina', 'France', 'Spain'];
+
 function renderCatalog() {
   const q = state.searchQuery.toLowerCase().trim();
 
@@ -174,6 +176,18 @@ function renderCatalog() {
       ? p.team === state.activeTeam
       : leagueMatch(p, state.activeLeague);
   });
+
+  // Featured teams first when showing all products with no filter
+  if (!q && state.activeLeague === 'all' && !state.activeTeam) {
+    filtered.sort((a, b) => {
+      const ai = FEATURED_TEAMS.indexOf(a.team);
+      const bi = FEATURED_TEAMS.indexOf(b.team);
+      if (ai !== -1 && bi !== -1) return ai - bi;
+      if (ai !== -1) return -1;
+      if (bi !== -1) return 1;
+      return 0;
+    });
+  }
 
   grid.innerHTML = filtered.map(buildCard).join('');
   countBadge.textContent = `${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
