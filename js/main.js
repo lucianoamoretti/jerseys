@@ -80,6 +80,34 @@ function scrollToProducts() {
   window.scrollTo({ top, behavior: 'smooth' });
 }
 
+/* ─── Country flag map ─── */
+const COUNTRY_FLAGS = {
+  'Brazil':'🇧🇷','Argentina':'🇦🇷','France':'🇫🇷','England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Germany':'🇩🇪',
+  'Spain':'🇪🇸','Portugal':'🇵🇹','Italy':'🇮🇹','Netherlands':'🇳🇱','Belgium':'🇧🇪',
+  'Croatia':'🇭🇷','Mexico':'🇲🇽','USA':'🇺🇸','Uruguay':'🇺🇾','Colombia':'🇨🇴',
+  'Senegal':'🇸🇳','Morocco':'🇲🇦','Japan':'🇯🇵','South Korea':'🇰🇷','Australia':'🇦🇺',
+  'Canada':'🇨🇦','Poland':'🇵🇱','Denmark':'🇩🇰','Sweden':'🇸🇪','Switzerland':'🇨🇭',
+  'Turkey':'🇹🇷','Ecuador':'🇪🇨','Ghana':'🇬🇭','Ivory Coast':'🇨🇮','Nigeria':'🇳🇬',
+  'Saudi Arabia':'🇸🇦','Iran':'🇮🇷','Chile':'🇨🇱','Peru':'🇵🇪','Czech Republic':'🇨🇿',
+  'Austria':'🇦🇹','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','Wales':'🏴󠁧󠁢󠁷󠁬󠁳󠁿','Ireland':'🇮🇪','Greece':'🇬🇷',
+  'Romania':'🇷🇴','Curaçao':'🇨🇼','Jamaica':'🇯🇲','Paraguay':'🇵🇾','Bolivia':'🇧🇴',
+  'Venezuela':'🇻🇪','Algeria':'🇩🇿','Panama':'🇵🇦','Cape Verde':'🇨🇻','Tunisia':'🇹🇳',
+  'South Africa':'🇿🇦','Norway':'🇳🇴','Congo':'🇨🇩','Haiti':'🇭🇹','Jordan':'🇯🇴',
+  'Guatemala':'🇬🇹','Costa Rica':'🇨🇷','New Zealand':'🇳🇿','Bosnia':'🇧🇦',
+  'Finland':'🇫🇮','Israel':'🇮🇱','Hungary':'🇭🇺','Uzbekistan':'🇺🇿','Egypt':'🇪🇬',
+  'UAE':'🇦🇪','El Salvador':'🇸🇻','Cameroon':'🇨🇲','Slovenia':'🇸🇮','Qatar':'🇶🇦',
+  'Mali':'🇲🇱','New Caledonia':'🇳🇨','Honduras':'🇭🇳','Cuba':'🇨🇺',
+};
+
+const FLAG_LEAGUES = new Set(['World Cup 2026', 'National Teams']);
+
+function teamPillLabel(team, league) {
+  if (FLAG_LEAGUES.has(league) && COUNTRY_FLAGS[team]) {
+    return `${COUNTRY_FLAGS[team]} ${team}`;
+  }
+  return team;
+}
+
 /* ─── Team sub-bar ─── */
 function updateTeamBar() {
   const hideTeamBar = state.activeLeague === 'all' || state.activeLeague.startsWith('NBA');
@@ -101,7 +129,7 @@ function updateTeamBar() {
 
   teamBar.classList.remove('hidden');
   const pills = teamsInLeague.map(t =>
-    `<button class="fpill team-bar-pill${state.activeTeam === t ? ' active' : ''}" data-team="${t}">${t}</button>`
+    `<button class="fpill team-bar-pill${state.activeTeam === t ? ' active' : ''}" data-team="${t}">${teamPillLabel(t, state.activeLeague)}</button>`
   ).join('');
   teamList.innerHTML = pills;
 
