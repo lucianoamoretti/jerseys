@@ -110,7 +110,7 @@ function teamPillLabel(team, league) {
 
 /* ─── Team sub-bar ─── */
 function updateTeamBar() {
-  const hideTeamBar = state.activeLeague === 'all' || state.activeLeague.startsWith('NBA');
+  const hideTeamBar = state.activeLeague === 'all' || state.activeLeague === 'NBA';
   if (hideTeamBar) {
     teamBar.classList.add('hidden');
     updateBarsStacking();
