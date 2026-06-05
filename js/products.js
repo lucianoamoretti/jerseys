@@ -7065,6 +7065,5 @@ const products = [
   {id:7149,name:'25/26 Bohemian FC Home S-XXL',team:'Bohemians',league:'Irish League',category:'fan',conference:'',image:'images/1df08cdd.jpg',images:['images/1df08cdd.jpg','images/2e2ef8a8.jpg','images/f519c834.jpg','images/5860cad1.jpg']},
   {id:7150,name:'Bohemian FC 26/27 Away Jersey S-4XL',team:'Bohemians',league:'Irish League',category:'fan',conference:'',image:'images/969d70a8.jpg',images:['images/969d70a8.jpg','images/98044de9.jpg','images/ec8f0565.jpg','images/aa7ba32b.jpg']},
   {id:7151,name:'Bohemian 25/26 Special edition Jersey S-4XL',team:'Bohemians',league:'Irish League',category:'fan',conference:'',image:'images/b50809c3.jpg',images:['images/b50809c3.jpg','images/6efef04e.jpg','images/dd0c2aba.jpg','images/3e330c09.jpg']},
-  {id:7152,name:'25/26 Bohemian FC Third Away S-XXL',team:'Bohemians',league:'Irish League',category:'fan',conference:'',image:'images/929ef465.jpg',images:['images/929ef465.jpg','images/6671954c.jpg','images/7e5a6de3.jpg','images/240a78e0.jpg']},
   {id:7153,name:'Bohemian 25/26 Irish Cup Home Jersey S-4XL',team:'Bohemians',league:'Irish League',category:'fan',conference:'',image:'images/245107b2.jpg',images:['images/245107b2.jpg','images/9f8a9a16.jpg','images/e87afce3.jpg','images/2f3fb618.jpg']},
 ];
