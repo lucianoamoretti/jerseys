@@ -688,11 +688,20 @@ cartBtn.addEventListener('click', () => {
   navigateTo('cart');
 });
 
-/* ─── Sticky header shadow ─── */
+/* ─── Sticky header shadow + parallax ─── */
+const heroEl = document.querySelector('.hero');
+const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent);
+if (isIOS && heroEl) {
+  heroEl.style.backgroundAttachment = 'scroll';
+  window.addEventListener('scroll', () => {
+    heroEl.style.backgroundPositionY = (window.scrollY * 0.45) + 'px';
+  }, { passive: true });
+}
+
 window.addEventListener('scroll', () => {
   document.getElementById('header').style.boxShadow =
     window.scrollY > 10 ? '0 2px 16px rgba(0,0,0,.5)' : 'none';
-});
+}, { passive: true });
 
 
 /* ─── Init ─── */
