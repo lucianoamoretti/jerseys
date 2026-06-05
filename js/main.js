@@ -532,6 +532,17 @@ function renderCartPage() {
           <div class="cs-row cs-total">
             <span>Total</span><span>€${grandTotal.toFixed(2)}</span>
           </div>
+          <div class="cs-address">
+            <div class="cs-address-label">Delivery Address</div>
+            <input type="text" id="csName"     class="cs-input" placeholder="Full name">
+            <input type="text" id="csAddress"  class="cs-input" placeholder="Street address">
+            <div class="cs-input-row">
+              <input type="text" id="csCity"     class="cs-input" placeholder="City">
+              <input type="text" id="csPostcode" class="cs-input cs-input-sm" placeholder="Postcode">
+            </div>
+            <input type="text" id="csCountry"  class="cs-input" placeholder="Country">
+            <div class="cs-address-error" id="csAddressError">Please fill in your full delivery address.</div>
+          </div>
           <button class="cart-wa-btn" onclick="orderCartViaWhatsApp()">
             <i class="fab fa-whatsapp"></i> Order on WhatsApp — €${grandTotal.toFixed(2)}
           </button>
@@ -546,6 +557,20 @@ function renderCartPage() {
 
 /* ─── WhatsApp multi-item message ─── */
 function orderCartViaWhatsApp() {
+  const name     = document.getElementById('csName')?.value.trim()     || '';
+  const address  = document.getElementById('csAddress')?.value.trim()  || '';
+  const city     = document.getElementById('csCity')?.value.trim()     || '';
+  const postcode = document.getElementById('csPostcode')?.value.trim() || '';
+  const country  = document.getElementById('csCountry')?.value.trim()  || '';
+  const errEl    = document.getElementById('csAddressError');
+
+  if (!name || !address || !city || !country) {
+    if (errEl) errEl.classList.add('visible');
+    document.getElementById('csName')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  if (errEl) errEl.classList.remove('visible');
+
   const subtotal   = state.cart.reduce((s, i) => s + i.total, 0);
   const shipping   = state.cart.length >= 2 ? 0 : 5;
   const grandTotal = subtotal + shipping;
@@ -576,10 +601,15 @@ function orderCartViaWhatsApp() {
     lines.push(``);
   });
 
+  const fullAddress = [address, postcode ? `${city} ${postcode}` : city, country].filter(Boolean).join(', ');
   lines.push(`---`);
   lines.push(`Subtotal: EUR ${subtotal.toFixed(2)}`);
   lines.push(`Shipping: ${shippingLine}`);
   lines.push(`*Total: EUR ${grandTotal.toFixed(2)}*`);
+  lines.push(``);
+  lines.push(`*Delivery to:*`);
+  lines.push(`${name}`);
+  lines.push(`${fullAddress}`);
   lines.push(``);
   lines.push(`Please confirm availability. Thank you!`);
 

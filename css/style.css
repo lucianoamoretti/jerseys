@@ -369,7 +369,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
   gap: 10px;
   transition: all var(--trans);
 }
-.pp-add-btn:hover { background: #000; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,0,0,.15); }
+.pp-add-btn:hover { background: #111; color: #fff; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,0,0,.15); }
 .pp-add-btn.added { background: #444; color: #fff; }
 
 .pp-error { margin-top: 8px; font-size: 12px; color: var(--red); text-align: center; font-weight: 600; }
@@ -428,6 +428,29 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 .cs-free-hint i { color: #777; }
 .cs-total { border-bottom: none; font-weight: 800; font-size: 16px; padding-top: 14px; }
 .cs-total span:last-child { font-family: var(--font-d); font-size: 28px; color: #111; }
+/* Address form */
+.cs-address { margin: 16px 0 4px; display: flex; flex-direction: column; gap: 8px; }
+.cs-address-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; margin-bottom: 2px; }
+.cs-input {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: var(--font-b);
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--trans);
+}
+.cs-input:focus { border-color: #888; }
+.cs-input::placeholder { color: #bbb; }
+.cs-input-row { display: flex; gap: 8px; }
+.cs-input-row .cs-input { flex: 1; }
+.cs-input-sm { max-width: 110px; flex: none !important; }
+.cs-address-error { font-size: 11px; color: var(--red); font-weight: 600; display: none; margin-top: 2px; }
+.cs-address-error.visible { display: block; }
+
 .cart-wa-btn {
   width: 100%;
   background: #25D366;
