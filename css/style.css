@@ -445,9 +445,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 }
 .cs-input:focus { border-color: #888; }
 .cs-input::placeholder { color: #bbb; }
-.cs-input-row { display: flex; gap: 8px; }
-.cs-input-row .cs-input { flex: 1; }
-.cs-input-sm { max-width: 110px; flex: none !important; }
 .cs-address-error { font-size: 11px; color: var(--red); font-weight: 600; display: none; margin-top: 2px; }
 .cs-address-error.visible { display: block; }
 
