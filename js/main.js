@@ -322,7 +322,7 @@ function renderProductPage(id) {
       <div class="pp-info-strip">
         <span><i class="fas fa-shipping-fast"></i> €5 shipping · <strong>Free on 2+ items</strong></span>
         <span><i class="fas fa-clock"></i> Delivery ~20 days</span>
-        <span><i class="fab fa-paypal"></i> PayPal accepted</span>
+        <span><i class="fas fa-exchange-alt"></i> Payment via transfer or Revolut</span>
         <span><i class="fas fa-ruler"></i> 2XL +€2 · 3XL/4XL +€3</span>
       </div>
 
@@ -547,7 +547,7 @@ function renderCartPage() {
           <button class="cart-browse-btn" onclick="navigateTo('catalog')" style="width:100%;margin-top:10px;background:transparent;border:1px solid var(--border);color:var(--muted)">
             <i class="fas fa-arrow-left"></i> Continue Shopping
           </button>
-          <div class="cs-paypal"><i class="fab fa-paypal"></i> PayPal accepted</div>
+          <div class="cs-paypal"><i class="fas fa-exchange-alt"></i> Payment via transfer or Revolut</div>
         </div>
       </div>
     </div>`;
