@@ -67,7 +67,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 
 /* Logo */
 .logo { display: flex; align-items: center; gap: 0; text-decoration: none; flex-shrink: 0; }
-.logo-img { height: 48px; width: auto; display: block; filter: brightness(0) invert(1); }
+.logo-img { height: 48px; width: auto; display: block; }
 .logo-ball { display: none; }
 .logo-name { display: none; }
 .logo-tagline { display: none; }
@@ -455,7 +455,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 /* ===== FOOTER ===== */
 .footer { background: #111; border-top: 1px solid #000; padding: 44px 0 20px; }
 .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; margin-bottom: 32px; }
-.footer-logo { height: 44px; width: auto; display: block; filter: brightness(0) invert(1); margin-bottom: 14px; }
+.footer-logo { height: 44px; width: auto; display: block; margin-bottom: 14px; }
 .footer-brand p { font-size: 12px; color: rgba(255,255,255,.35); line-height: 1.7; max-width: 260px; margin-bottom: 14px; }
 .footer-wa-btn { display: inline-flex; align-items: center; gap: 6px; background: #25D366; color: #fff; padding: 8px 14px; border-radius: 7px; font-size: 12px; font-weight: 700; text-decoration: none; transition: background var(--trans); }
 .footer-wa-btn:hover { background: #1ebe57; }
