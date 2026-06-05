@@ -121,40 +121,49 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 
 /* ===== FILTER BARS ===== */
 .filter-bar {
-  background: var(--bg2);
+  background: #fff;
   border-bottom: 1px solid var(--border);
   position: sticky;
   z-index: 200;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
 }
 
 #leagueBar { top: 64px; }
-.league-bar { background: #f7fdf8; overflow: visible; }
+.league-bar { overflow: visible; }
 
 .fg-row {
   display: flex;
   align-items: center;
-  border-bottom: 1px solid rgba(37,120,60,.08);
+  border-bottom: 1px solid rgba(37,120,60,.07);
 }
 .fg-row:last-child { border-bottom: none; }
 
+.fg-row.row-football { background: rgba(37,120,60,.03); }
+.fg-row.row-more     { background: rgba(0,0,0,.015); }
+.fg-row.row-nba      { background: rgba(80,0,180,.03); }
+.fg-row.row-teams    { background: rgba(37,120,60,.05); }
+
 .fg-label {
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 800;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: var(--muted);
-  padding: 0 12px;
+  padding: 3px 7px;
+  margin: 0 6px 0 12px;
   white-space: nowrap;
-  width: 72px;
   flex-shrink: 0;
-  border-right: 1px solid var(--border);
+  border-radius: 4px;
 }
+.lbl-football { background: rgba(37,120,60,.14); color: #1a5c2c; }
+.lbl-more     { background: rgba(80,80,80,.1);   color: #555; }
+.lbl-nba      { background: rgba(80,0,180,.12);  color: #5500bb; }
+.lbl-teams    { background: rgba(37,120,60,.14); color: #1a5c2c; }
 
 .fg-pills {
   display: flex;
   gap: 6px;
   overflow-x: auto;
-  padding: 7px 12px;
+  padding: 8px 10px;
   scrollbar-width: none;
   flex: 1;
   align-items: center;
@@ -167,10 +176,10 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 /* Pills */
 .fpill {
   background: transparent;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  padding: 6px 14px;
-  border-radius: 20px;
+  border: 1.5px solid rgba(37,120,60,.25);
+  color: #5a7d62;
+  padding: 5px 13px;
+  border-radius: 100px;
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
@@ -180,14 +189,15 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
   flex-shrink: 0;
 }
 .fpill:hover { border-color: var(--green); color: var(--green); background: var(--green-dim); }
-.fpill.active { background: var(--green); border-color: var(--green); color: #fff; }
-.fpill.league-pill.active { background: var(--green); border-color: var(--green-d); color: #fff; }
+.fpill.active { background: var(--green); border-color: var(--green-d); color: #fff; box-shadow: 0 2px 6px rgba(37,120,60,.3); }
+.fpill.league-pill.active { background: var(--green); border-color: var(--green-d); color: #fff; box-shadow: 0 2px 6px rgba(37,120,60,.3); }
 .fpill.team-bar-pill.active { background: var(--green-d); border-color: var(--green); color: #fff; }
 
 /* NBA East/West special colors */
-.fpill[data-league="NBA East"].active { background: #1a0033; border-color: #7a00dd; color: #bb66ff; }
-.fpill[data-league="NBA West"].active { background: #1a0000; border-color: #dd4400; color: #ff8844; }
-.fpill.team-pill.active { background: #001a33; border-color: #0066cc; color: #66aaff; }
+.fpill[data-league="NBA East"]:hover  { border-color: #8833ff; color: #6600cc; background: rgba(80,0,180,.07); }
+.fpill[data-league="NBA East"].active { background: #3d0080; border-color: #9944ff; color: #ddaaff; box-shadow: 0 2px 8px rgba(80,0,180,.35); }
+.fpill[data-league="NBA West"]:hover  { border-color: #cc3300; color: #aa2200; background: rgba(200,50,0,.07); }
+.fpill[data-league="NBA West"].active { background: #550000; border-color: #dd4400; color: #ffaa88; box-shadow: 0 2px 8px rgba(180,30,0,.35); }
 
 /* ===== HERO ===== */
 .hero {

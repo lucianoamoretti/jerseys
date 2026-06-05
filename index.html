@@ -59,8 +59,8 @@
 
     <!-- Filter Bar 1 — Football / NBA -->
     <nav class="filter-bar league-bar" id="leagueBar">
-        <div class="fg-row">
-            <span class="fg-label">FOOTBALL</span>
+        <div class="fg-row row-football">
+            <span class="fg-label lbl-football">FOOTBALL</span>
             <div class="fg-pills">
                 <button class="fpill league-pill active" data-league="all">🌐 All</button>
                 <button class="fpill league-pill" data-league="World Cup 2026">🏆 World Cup 2026</button>
@@ -72,8 +72,8 @@
                 <button class="fpill league-pill" data-league="Serie A">🇮🇹 Serie A</button>
             </div>
         </div>
-        <div class="fg-row">
-            <span class="fg-label">MORE</span>
+        <div class="fg-row row-more">
+            <span class="fg-label lbl-more">MORE</span>
             <div class="fg-pills">
                 <button class="fpill league-pill" data-league="Championship">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Championship</button>
                 <button class="fpill league-pill" data-league="Segunda División">🇪🇸 Segunda</button>
@@ -92,24 +92,20 @@
                 <button class="fpill league-pill" data-league="Other">🌐 Other</button>
             </div>
         </div>
-        <div class="fg-row">
-            <span class="fg-label">NBA</span>
+        <div class="fg-row row-nba">
+            <span class="fg-label lbl-nba">NBA</span>
             <div class="fg-pills">
                 <button class="fpill league-pill" data-league="NBA">🏀 All NBA</button>
                 <button class="fpill league-pill" data-league="NBA East">🟣 East</button>
                 <button class="fpill league-pill" data-league="NBA West">🟠 West</button>
-                <button class="fpill team-pill" data-team="Los Angeles Lakers">💛 Lakers</button>
-                <button class="fpill team-pill" data-team="Boston Celtics">🍀 Celtics</button>
-                <button class="fpill team-pill" data-team="Chicago Bulls">🔴 Bulls</button>
-                <button class="fpill team-pill" data-team="Golden State Warriors">💙 Warriors</button>
             </div>
         </div>
     </nav>
 
     <!-- Filter Bar 2 — Teams (dynamic per league) -->
     <nav class="filter-bar team-bar hidden" id="teamBar">
-        <div class="fg-row">
-            <span class="fg-label">TEAMS</span>
+        <div class="fg-row row-teams">
+            <span class="fg-label lbl-teams">TEAMS</span>
             <div class="fg-pills" id="teamList"></div>
         </div>
     </nav>
