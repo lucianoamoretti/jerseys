@@ -26,8 +26,8 @@
   --trans:       .2s ease;
 }
 
-html { scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--text); font-family: var(--font-b); min-height: 100vh; overflow-x: hidden; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-b); min-height: 100vh; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
 .container { max-width: 1380px; margin: 0 auto; padding: 0 20px; }
 .accent { color: var(--accent-bright); }
 .hidden { display: none !important; }
@@ -162,6 +162,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
   display: flex;
   gap: 0;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 0 6px;
   scrollbar-width: none;
   flex: 1;
@@ -512,4 +513,27 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-b); mi
 @media (max-width: 420px) {
   .product-grid { grid-template-columns: 1fr; }
   .search-wrap { max-width: 150px; }
+}
+
+/* ===== MOBILE-ONLY OPTIMIZATIONS (no desktop impact) ===== */
+@media (max-width: 768px) {
+  /* iOS disables parallax on fixed bg and renders it janky/blank — use scroll */
+  .hero { background-attachment: scroll; min-height: 380px; }
+  .hero-inner { padding: 40px 20px; }
+
+  /* Prevent iOS auto-zoom on focus: inputs must be >= 16px */
+  .search-wrap input,
+  .cs-input,
+  .pp-custom-input { font-size: 16px; }
+
+  /* Respect notch / home-indicator safe areas */
+  .wa-fab {
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    right: calc(18px + env(safe-area-inset-right));
+  }
+  .container { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+
+  /* Comfortable tap targets on the product page */
+  .pp-size-btn { min-height: 44px; }
+  .addon-toggle { min-height: 48px; }
 }
